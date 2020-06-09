@@ -65,45 +65,62 @@ class Weather {
   ///
   /// Call [fetchReadings()] before this.
   NearestStation nearestAirTemperature(Geoposition geoposition) {
-    return _deduceNearestStation(
+    NearestStation s = _deduceNearestStation(
       geoposition,
       WeatherReadingType.airTemperature,
     );
+
+    return _updateAirTemperatureAnomalies(NearestStation.from(s));
   }
 
   /// Gets the nearest station with rainfall reading.
   ///
   /// Call [fetchReadings()] before this.
   NearestStation nearestRainfall(Geoposition geoposition) {
-    return _deduceNearestStation(geoposition, WeatherReadingType.rainfall);
+    NearestStation s = _deduceNearestStation(
+      geoposition,
+      WeatherReadingType.rainfall,
+    );
+
+    return _updateRainfallAnomalies(NearestStation.from(s));
   }
 
   /// Gets the nearest station with relative humidity reading.
   ///
   /// Call [fetchReadings()] before this.
   NearestStation nearestRelativeHumidity(Geoposition geoposition) {
-    return _deduceNearestStation(
+    NearestStation s = _deduceNearestStation(
       geoposition,
       WeatherReadingType.relativeHumidity,
     );
+
+    return _updateRelativeHumidityAnomalies(NearestStation.from(s));
   }
 
   /// Gets the nearest station with wind direction / wind speed readings.
   ///
   /// Call [fetchReadings()] before this.
   NearestStation nearestWindDirectionWindSpeed(Geoposition geoposition) {
-    return _deduceNearestStation(geoposition, WeatherReadingType.windSpeed);
+    NearestStation s = _deduceNearestStation(
+      geoposition,
+      WeatherReadingType.windSpeed,
+    );
+
+    return _updateWindDirectionWindSpeedAnomalies(NearestStation.from(s));
   }
 
   /// Gets the nearest forecast area with forecast data.
   ///
   /// Call [fetchReadings()] before this.
   NearestForecastArea nearest2HourForecast(Geoposition geoposition) {
-    return _forecastAreas.values.where((e) => e.forecast != null).map((e) {
+    NearestForecastArea f =
+        _forecastAreas.values.where((e) => e.forecast != null).map((e) {
       e.userLocation = geoposition;
       e.distance = e.geoposition.distanceFrom(geoposition);
       return e;
     }).reduce((v, e) => v.distance < e.distance ? v : e);
+
+    return _updateForecastAnomalies(f);
   }
 
   /// Picks the nearest station out of [_stations] for reading [type].
@@ -185,6 +202,8 @@ class Weather {
         }
       });
 
+      DateTime serverTimestamp = DateTime.parse(data['items'][0]['timestamp']);
+
       (data['items'][0]['readings'] as List).forEach((element) {
         NearestStation station;
 
@@ -205,22 +224,27 @@ class Weather {
           switch (type) {
             case WeatherReadingType.airTemperature:
               station.airTemperature = value;
+              station.airTemperatureTimestamp = serverTimestamp;
               break;
 
             case WeatherReadingType.rainfall:
               station.rainfall = value;
+              station.rainfallTimestamp = serverTimestamp;
               break;
 
             case WeatherReadingType.relativeHumidity:
               station.relativeHumidity = value;
+              station.relativeHumidityTimestamp = serverTimestamp;
               break;
 
             case WeatherReadingType.windDirection:
               station.windDirection = value.toInt();
+              station.windDirectionTimestamp = serverTimestamp;
               break;
 
             case WeatherReadingType.windSpeed:
               station.windSpeed = knotsToMetersPerSecond(value);
+              station.windSpeedTimestamp = serverTimestamp;
               break;
           }
 
@@ -300,6 +324,8 @@ class Weather {
         }
       });
 
+      DateTime serverTimestamp = DateTime.parse(data['items'][0]['timestamp']);
+
       (data['items'][0]['forecasts'] as List).forEach((element) {
         NearestForecastArea forecastArea;
 
@@ -314,10 +340,58 @@ class Weather {
 
         if (forecastArea != null) {
           forecastArea.forecast = element['forecast'];
+          forecastArea.forecastTimestamp = serverTimestamp;
           forecastArea.timestamp = timestamp;
         }
       });
     }
+  }
+
+  NearestStation _updateAirTemperatureAnomalies(NearestStation s) {
+    s.readingAnomaly = false;
+    s.timestampAnomaly =
+        s.airTemperatureTimestamp.difference(_timestamp).abs() >
+            constants.maxReadingRecency;
+    s.distanceAnomaly = s.distance > constants.maxDistance;
+
+    return s;
+  }
+
+  NearestStation _updateRainfallAnomalies(NearestStation s) {
+    s.readingAnomaly = false;
+    s.timestampAnomaly = s.rainfallTimestamp.difference(_timestamp).abs() >
+        constants.maxReadingRecency;
+    s.distanceAnomaly = s.distance > constants.maxDistance;
+
+    return s;
+  }
+
+  NearestStation _updateRelativeHumidityAnomalies(NearestStation s) {
+    s.readingAnomaly = false;
+    s.timestampAnomaly =
+        s.relativeHumidityTimestamp.difference(_timestamp).abs() >
+            constants.maxReadingRecency;
+    s.distanceAnomaly = s.distance > constants.maxDistance;
+
+    return s;
+  }
+
+  NearestStation _updateWindDirectionWindSpeedAnomalies(NearestStation s) {
+    s.readingAnomaly = false;
+    s.timestampAnomaly = s.windSpeedTimestamp.difference(_timestamp).abs() >
+        constants.maxReadingRecency;
+    s.distanceAnomaly = s.distance > constants.maxDistance;
+
+    return s;
+  }
+
+  NearestForecastArea _updateForecastAnomalies(NearestForecastArea f) {
+    f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
+    f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
+        constants.maxReadingRecency;
+    f.distanceAnomaly = f.distance > constants.maxDistance;
+
+    return f;
   }
 }
 

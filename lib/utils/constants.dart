@@ -13,6 +13,13 @@ const double knotToMetersPerSecond = 0.514444;
 /// The minimum period between consecutive data fetches.
 const Duration minFetchPeriod = Duration(minutes: 15);
 
+/// The maximum period for a reading to be considered realtime.
+const Duration maxReadingRecency = Duration(minutes: 45);
+
+/// The maximum distance in km for a station or forecast area to be considered
+/// near.
+const double maxDistance = 10.0;
+
 /// The URL of realtime air temperature readings API (at Data.gov.sg).
 ///
 /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is °C.
@@ -76,5 +83,10 @@ const double smallIconSize = 12.0;
 /// The size of large icons.
 const double largeIconSize = 100.0;
 
+/// The color to use to highlight anomalies.
+///
+/// Used inside [Icon]s and [Text]s.
+const Color anomalyHighlight = Colors.red;
+
 /// The pattern for displaying [DateTime]s to the user.
-const String dateTimePattern = 'd MMM, h:mm a';
+const String dateTimePattern = 'd MMM H:mm';

@@ -19,6 +19,19 @@ class ForecastArea {
   /// The 2-hour weather forecast.
   String forecast;
 
+  /// The server timestamp for the 2-hour weather forecast.
+  DateTime forecastTimestamp;
+
+  /// Indicates whether the forecast is unexpected.
+  ///
+  /// For example, an empty string.
+  bool forecastAnomaly;
+
+  /// Indicates whether the server timestamp is unexpected.
+  ///
+  /// For example, not recent enough to be considered realtime.
+  bool timestampAnomaly;
+
   ForecastArea({
     @required this.id,
     @required this.name,
@@ -36,6 +49,11 @@ class NearestForecastArea extends ForecastArea {
 
   /// The distance unit.
   String distanceUnit = 'km';
+
+  /// Indicates whether the distance is unexpected.
+  ///
+  /// For example, out of acceptable range.
+  bool distanceAnomaly;
 
   NearestForecastArea({
     @required String id,

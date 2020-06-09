@@ -54,12 +54,22 @@ class _HomeState extends State<Home> {
                   if (_airTemperature != null)
                     Text(
                       '${_airTemperature.airTemperature.round().toString()}°',
-                      style: constants.largeTextStyle,
+                      style: _airTemperature.readingAnomaly ||
+                              _airTemperature.timestampAnomaly ||
+                              _airTemperature.distanceAnomaly
+                          ? constants.largeTextStyle
+                              .copyWith(color: constants.anomalyHighlight)
+                          : constants.largeTextStyle,
                     ),
                   if (_condition != null)
                     BoxedIcon(
                       _getConditionIcon(),
                       size: constants.largeIconSize,
+                      color: _condition.forecastAnomaly ||
+                              _condition.timestampAnomaly ||
+                              _condition.distanceAnomaly
+                          ? constants.anomalyHighlight
+                          : null,
                     ),
                 ],
               ),
@@ -71,16 +81,44 @@ class _HomeState extends State<Home> {
                   BoxedIcon(
                     WeatherIcons.thermometer,
                     size: constants.smallIconSize,
+                    color: _airTemperature.readingAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
                   ),
                   Text(
                     '${_airTemperature.airTemperature.toStringAsFixed(1)}${_airTemperature.airTemperatureUnit}',
-                    style: constants.smallTextStyle,
+                    style: _airTemperature.readingAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
-                  _BoxedIcon(icon: Icons.place),
+                  _BoxedIcon(
+                    icon: Icons.place,
+                    color: _airTemperature.distanceAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     '${_airTemperature.name} (${_airTemperature.distance.toStringAsFixed(1)}${_airTemperature.distanceUnit})',
-                    style: constants.smallTextStyle,
+                    style: _airTemperature.distanceAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
+                  ),
+                  SizedBox(width: 4.0),
+                  _BoxedIcon(
+                    icon: Icons.schedule,
+                    color: _airTemperature.timestampAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
+                  Text(
+                    '${_airTemperature.airTemperatureTimestamp.toLocal().format(constants.dateTimePattern)}',
+                    style: _airTemperature.timestampAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                 ],
               ),
@@ -91,16 +129,44 @@ class _HomeState extends State<Home> {
                   BoxedIcon(
                     WeatherIcons.umbrella,
                     size: constants.smallIconSize,
+                    color: _rainfall.readingAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
                   ),
                   Text(
                     '${_rainfall.rainfall.toStringAsFixed(1)}${_rainfall.rainfallUnit}',
-                    style: constants.smallTextStyle,
+                    style: _rainfall.readingAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
-                  _BoxedIcon(icon: Icons.place),
+                  _BoxedIcon(
+                    icon: Icons.place,
+                    color: _rainfall.distanceAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     '${_rainfall.name} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
-                    style: constants.smallTextStyle,
+                    style: _rainfall.distanceAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
+                  ),
+                  SizedBox(width: 4.0),
+                  _BoxedIcon(
+                    icon: Icons.schedule,
+                    color: _rainfall.timestampAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
+                  Text(
+                    '${_rainfall.rainfallTimestamp.toLocal().format(constants.dateTimePattern)}',
+                    style: _rainfall.timestampAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                 ],
               ),
@@ -111,16 +177,44 @@ class _HomeState extends State<Home> {
                   BoxedIcon(
                     WeatherIcons.raindrop,
                     size: constants.smallIconSize,
+                    color: _relativeHumidity.readingAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
                   ),
                   Text(
                     '${_relativeHumidity.relativeHumidity.toStringAsFixed(1)}${_relativeHumidity.relativeHumidityUnit}',
-                    style: constants.smallTextStyle,
+                    style: _relativeHumidity.readingAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
-                  _BoxedIcon(icon: Icons.place),
+                  _BoxedIcon(
+                    icon: Icons.place,
+                    color: _relativeHumidity.distanceAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     '${_relativeHumidity.name} (${_relativeHumidity.distance.toStringAsFixed(1)}${_relativeHumidity.distanceUnit})',
-                    style: constants.smallTextStyle,
+                    style: _relativeHumidity.distanceAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
+                  ),
+                  SizedBox(width: 4.0),
+                  _BoxedIcon(
+                    icon: Icons.schedule,
+                    color: _relativeHumidity.timestampAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
+                  Text(
+                    '${_relativeHumidity.relativeHumidityTimestamp.toLocal().format(constants.dateTimePattern)}',
+                    style: _relativeHumidity.timestampAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                 ],
               ),
@@ -131,25 +225,59 @@ class _HomeState extends State<Home> {
                   BoxedIcon(
                     WeatherIcons.strong_wind,
                     size: constants.smallIconSize,
+                    color: _wind.readingAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
                   ),
                   Text(
                     '${_wind.windSpeed.toStringAsFixed(1)}${_wind.windSpeedUnit}',
-                    style: constants.smallTextStyle,
+                    style: _wind.readingAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
                   _BoxedIcon(
                     icon: Icons.navigation,
                     rotation: degreesToRadians(_wind.windDirection.toDouble()),
+                    color: _wind.readingAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
                   ),
                   Text(
                     '${_wind.windDirection.toString()}${_wind.windDirectionUnit}',
-                    style: constants.smallTextStyle,
+                    style: _wind.readingAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
-                  _BoxedIcon(icon: Icons.place),
+                  _BoxedIcon(
+                    icon: Icons.place,
+                    color: _wind.distanceAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     '${_wind.name} (${_wind.distance.toStringAsFixed(1)}${_wind.distanceUnit})',
-                    style: constants.smallTextStyle,
+                    style: _wind.distanceAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
+                  ),
+                  SizedBox(width: 4.0),
+                  _BoxedIcon(
+                    icon: Icons.schedule,
+                    color: _wind.timestampAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
+                  Text(
+                    '${_wind.windSpeedTimestamp.toLocal().format(constants.dateTimePattern)}',
+                    style: _wind.timestampAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                 ],
               ),
@@ -157,29 +285,65 @@ class _HomeState extends State<Home> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  _BoxedIcon(icon: Icons.language),
+                  _BoxedIcon(
+                    icon: Icons.language,
+                    color: _condition.forecastAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     _condition.forecast,
-                    style: constants.smallTextStyle,
+                    style: _condition.forecastAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                   SizedBox(width: 4.0),
-                  _BoxedIcon(icon: Icons.place),
+                  _BoxedIcon(
+                    icon: Icons.place,
+                    color: _condition.distanceAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
                   Text(
                     '${_condition.name} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
-                    style: constants.smallTextStyle,
+                    style: _condition.distanceAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
+                  ),
+                  SizedBox(width: 4.0),
+                  _BoxedIcon(
+                    icon: Icons.schedule,
+                    color: _condition.timestampAnomaly
+                        ? constants.anomalyHighlight
+                        : null,
+                  ),
+                  Text(
+                    '${_condition.forecastTimestamp.toLocal().format(constants.dateTimePattern)}',
+                    style: _condition.timestampAnomaly
+                        ? constants.smallTextStyle
+                            .copyWith(color: constants.anomalyHighlight)
+                        : constants.smallTextStyle,
                   ),
                 ],
               ),
             if (_fetchTimestamp != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    _fetchTimestamp.format(constants.dateTimePattern),
-                    style: constants.smallTextStyle,
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    _BoxedIcon(icon: Icons.schedule),
+                    Text(
+                      _fetchTimestamp
+                          .toLocal()
+                          .format(constants.dateTimePattern),
+                      style: constants.smallTextStyle,
+                    ),
+                  ],
+                ),
               ),
           ],
         ),
@@ -265,10 +429,13 @@ class _BoxedIcon extends StatelessWidget {
 
   final double rotation;
 
+  final Color color;
+
   _BoxedIcon({
     @required this.icon,
     this.size = constants.smallIconSize,
     this.rotation,
+    this.color,
     Key key,
   }) : super(key: key);
 
@@ -282,11 +449,13 @@ class _BoxedIcon extends StatelessWidget {
               child: Icon(
                 icon,
                 size: size,
+                color: color,
               ),
             )
           : Icon(
               icon,
               size: size,
+              color: color,
             ),
     );
   }

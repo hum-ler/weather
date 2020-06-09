@@ -100,7 +100,7 @@ class _HomeState extends State<Home> {
                         : null,
                   ),
                   Text(
-                    '${_airTemperature.name} (${_airTemperature.distance.toStringAsFixed(1)}${_airTemperature.distanceUnit})',
+                    '${_airTemperature.name.truncate(constants.maxStationAreaNameLength, ellipsis: "…")} (${_airTemperature.distance.toStringAsFixed(1)}${_airTemperature.distanceUnit})',
                     style: _airTemperature.distanceAnomaly
                         ? constants.smallTextStyle
                             .copyWith(color: constants.anomalyHighlight)
@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
                         : null,
                   ),
                   Text(
-                    '${_rainfall.name} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
+                    '${_rainfall.name.truncate(constants.maxStationAreaNameLength, ellipsis: "…")} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
                     style: _rainfall.distanceAnomaly
                         ? constants.smallTextStyle
                             .copyWith(color: constants.anomalyHighlight)
@@ -196,7 +196,7 @@ class _HomeState extends State<Home> {
                         : null,
                   ),
                   Text(
-                    '${_relativeHumidity.name} (${_relativeHumidity.distance.toStringAsFixed(1)}${_relativeHumidity.distanceUnit})',
+                    '${_relativeHumidity.name.truncate(constants.maxStationAreaNameLength, ellipsis: "…")} (${_relativeHumidity.distance.toStringAsFixed(1)}${_relativeHumidity.distanceUnit})',
                     style: _relativeHumidity.distanceAnomaly
                         ? constants.smallTextStyle
                             .copyWith(color: constants.anomalyHighlight)
@@ -259,7 +259,7 @@ class _HomeState extends State<Home> {
                         : null,
                   ),
                   Text(
-                    '${_wind.name} (${_wind.distance.toStringAsFixed(1)}${_wind.distanceUnit})',
+                    '${_wind.name.truncate(constants.maxStationAreaNameLength, ellipsis: "…")} (${_wind.distance.toStringAsFixed(1)}${_wind.distanceUnit})',
                     style: _wind.distanceAnomaly
                         ? constants.smallTextStyle
                             .copyWith(color: constants.anomalyHighlight)
@@ -306,7 +306,7 @@ class _HomeState extends State<Home> {
                         : null,
                   ),
                   Text(
-                    '${_condition.name} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
+                    '${_condition.name.truncate(constants.maxStationAreaNameLength, ellipsis: "…")} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
                     style: _condition.distanceAnomaly
                         ? constants.smallTextStyle
                             .copyWith(color: constants.anomalyHighlight)

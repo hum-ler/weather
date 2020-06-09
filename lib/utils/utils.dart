@@ -41,3 +41,33 @@ extension DateTimeExtension on DateTime {
   /// for details on the pattern.
   String format(String pattern) => DateFormat(pattern).format(this);
 }
+
+extension StringExtension on String {
+  /// Truncates the string to no longer than [maxLength].
+  ///
+  /// [maxLength] includes the length of [ellipsis], if given.
+  String truncate(
+    int maxLength, {
+    String ellipsis,
+  }) {
+    if (maxLength < 1) {
+      throw ArgumentError.value(
+        maxLength,
+        'maxLength',
+        'maxLength must be greater than 0',
+      );
+    }
+    if (ellipsis != null && ellipsis.length >= maxLength) {
+      throw ArgumentError.value(
+        ellipsis,
+        'ellipsis',
+        'ellipsis.length must be less than maxLength',
+      );
+    }
+
+    if (this.length <= maxLength) return this;
+
+    ellipsis ??= '';
+    return this.substring(0, maxLength - ellipsis.length) + ellipsis;
+  }
+}

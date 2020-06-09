@@ -68,7 +68,7 @@ const String forecastUrl =
 
 /// The style for small-size text.
 const TextStyle smallTextStyle = TextStyle(
-  fontSize: 14.0,
+  fontSize: 12.0,
 );
 
 /// The style for large-size text.
@@ -77,8 +77,11 @@ const TextStyle largeTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+/// The maximum length of a station or forecast area name in the display.
+const int maxStationAreaNameLength = 18;
+
 /// The size of small icons.
-const double smallIconSize = 12.0;
+const double smallIconSize = 10.0;
 
 /// The size of large icons.
 const double largeIconSize = 100.0;

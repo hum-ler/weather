@@ -77,7 +77,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     ),
                   if (_condition != null)
                     BoxedIcon(
-                      _getConditionIcon(),
+                      _getConditionIcon(_condition.forecast),
                       size: constants.largeIconSize,
                       color: _condition.forecastAnomaly ||
                               _condition.timestampAnomaly ||
@@ -365,56 +365,33 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
-  IconData _getConditionIcon() {
-    switch (_condition.forecast) {
-      case 'Rain (Day)':
-        return WeatherIcons.day_rain;
+  IconData _getConditionIcon(String condition) {
+    Map<String, IconData> conditionIcons = {
+      'Cloudy': WeatherIcons.cloud,
+      'Fair (Day)': WeatherIcons.day_sunny,
+      'Fair (Night)': WeatherIcons.night_clear,
+      'Hazy': WeatherIcons.dust,
+      'Hazy (Day)': WeatherIcons.day_haze,
+      'Hazy (Night)': WeatherIcons.dust,
+      'Moderate Rain': WeatherIcons.rain,
+      'Overcast': WeatherIcons.cloudy,
+      'Partly Cloudy (Day)': WeatherIcons.day_cloudy,
+      'Partly Cloudy (Night)': WeatherIcons.night_alt_cloudy,
+      'Rain': WeatherIcons.rain,
+      'Rain (Day)': WeatherIcons.day_rain,
+      'Rain (Night)': WeatherIcons.night_alt_rain,
+      'Showers': WeatherIcons.showers,
+      'Showers (Day)': WeatherIcons.day_showers,
+      'Showers (Night)': WeatherIcons.night_alt_showers,
+      'Thundery Showers': WeatherIcons.storm_showers,
+      'Thundery Showers (Day)': WeatherIcons.day_storm_showers,
+      'Thundery Showers (Night)': WeatherIcons.night_alt_storm_showers,
+      'Windy': WeatherIcons.strong_wind,
+    };
 
-      case 'Showers (Day)':
-        return WeatherIcons.day_showers;
+    if (conditionIcons.containsKey(condition)) return conditionIcons[condition];
 
-      case 'Thundery Showers (Day)':
-        return WeatherIcons.day_storm_showers;
-
-      case 'Fair (Day)':
-        return WeatherIcons.day_sunny;
-
-      case 'Hazy (Day)':
-        return WeatherIcons.day_haze;
-
-      case 'Partly Cloudy (Day)':
-        return WeatherIcons.day_cloudy;
-
-      case 'Cloudy':
-        return WeatherIcons.cloud;
-
-      case 'Overcast':
-        return WeatherIcons.cloudy;
-
-      case 'Windy':
-        return WeatherIcons.strong_wind;
-
-      case 'Rain (Night)':
-        return WeatherIcons.night_alt_rain;
-
-      case 'Showers (Night)':
-        return WeatherIcons.night_alt_showers;
-
-      case 'Thundery Showers (Night)':
-        return WeatherIcons.night_alt_storm_showers;
-
-      case 'Fair (Night)':
-        return WeatherIcons.night_clear;
-
-      case 'Hazy (Night)':
-        return WeatherIcons.dust;
-
-      case 'Partly Cloudy (Night)':
-        return WeatherIcons.night_alt_cloudy;
-
-      default:
-        return WeatherIcons.na;
-    }
+    return WeatherIcons.na;
   }
 
   Future<void> _fetchData() async {

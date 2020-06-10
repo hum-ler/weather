@@ -100,59 +100,66 @@ class NearestStation extends Station {
     @required Geoposition geoposition,
   }) : super(id: id, name: name, geoposition: geoposition);
 
-  NearestStation.from(NearestStation nearestStation) {
+  factory NearestStation.from(NearestStation nearestStation) {
+    if (nearestStation == null) return null;
+
+    NearestStation s = NearestStation(
+      id: nearestStation.id,
+      name: nearestStation.name,
+      geoposition: nearestStation.geoposition != null
+          ? Geoposition(
+              latitude: nearestStation.geoposition.latitude,
+              longitude: nearestStation.geoposition.longitude,
+            )
+          : null,
+    );
+
     // Clone everything manually.
-    this.airTemperature = nearestStation.airTemperature;
+    s.airTemperature = nearestStation.airTemperature;
     if (nearestStation.airTemperatureTimestamp != null) {
-      this.airTemperatureTimestamp =
+      s.airTemperatureTimestamp =
           DateTime.parse(nearestStation.airTemperatureTimestamp.toString());
     }
-    this.airTemperatureUnit = nearestStation.airTemperatureUnit;
-    this.distance = nearestStation.distance;
-    this.distanceAnomaly = nearestStation.distanceAnomaly;
-    this.distanceUnit = nearestStation.distanceUnit;
-    if (nearestStation.geoposition != null) {
-      this.geoposition = Geoposition(
-        latitude: nearestStation.geoposition.latitude,
-        longitude: nearestStation.geoposition.longitude,
-      );
-    }
-    this.id = nearestStation.id;
-    this.name = nearestStation.name;
-    this.rainfall = nearestStation.rainfall;
+    s.airTemperatureUnit = nearestStation.airTemperatureUnit;
+    s.distance = nearestStation.distance;
+    s.distanceAnomaly = nearestStation.distanceAnomaly;
+    s.distanceUnit = nearestStation.distanceUnit;
+    s.rainfall = nearestStation.rainfall;
     if (nearestStation.rainfallTimestamp != null) {
-      this.rainfallTimestamp =
+      s.rainfallTimestamp =
           DateTime.parse(nearestStation.rainfallTimestamp.toString());
     }
-    this.rainfallUnit = nearestStation.rainfallUnit;
-    this.readingAnomaly = nearestStation.readingAnomaly;
-    this.relativeHumidity = nearestStation.relativeHumidity;
+    s.rainfallUnit = nearestStation.rainfallUnit;
+    s.readingAnomaly = nearestStation.readingAnomaly;
+    s.relativeHumidity = nearestStation.relativeHumidity;
     if (nearestStation.relativeHumidityTimestamp != null) {
-      this.relativeHumidityTimestamp =
+      s.relativeHumidityTimestamp =
           DateTime.parse(nearestStation.relativeHumidityTimestamp.toString());
     }
-    this.relativeHumidityUnit = nearestStation.relativeHumidityUnit;
+    s.relativeHumidityUnit = nearestStation.relativeHumidityUnit;
     if (nearestStation.timestamp != null) {
-      this.timestamp = DateTime.parse(nearestStation.timestamp.toString());
+      s.timestamp = DateTime.parse(nearestStation.timestamp.toString());
     }
-    this.timestampAnomaly = nearestStation.timestampAnomaly;
+    s.timestampAnomaly = nearestStation.timestampAnomaly;
     if (nearestStation.userLocation != null) {
-      this.userLocation = Geoposition(
+      s.userLocation = Geoposition(
         latitude: nearestStation.userLocation.latitude,
         longitude: nearestStation.userLocation.longitude,
       );
     }
-    this.windDirection = nearestStation.windDirection;
+    s.windDirection = nearestStation.windDirection;
     if (nearestStation.windDirectionTimestamp != null) {
-      this.windDirectionTimestamp =
+      s.windDirectionTimestamp =
           DateTime.parse(nearestStation.windDirectionTimestamp.toString());
     }
-    this.windDirectionUnit = nearestStation.windDirectionUnit;
-    this.windSpeed = nearestStation.windSpeed;
+    s.windDirectionUnit = nearestStation.windDirectionUnit;
+    s.windSpeed = nearestStation.windSpeed;
     if (nearestStation.windSpeedTimestamp != null) {
-      this.windSpeedTimestamp =
+      s.windSpeedTimestamp =
           DateTime.parse(nearestStation.windSpeedTimestamp.toString());
     }
-    this.windSpeedUnit = nearestStation.windSpeedUnit;
+    s.windSpeedUnit = nearestStation.windSpeedUnit;
+
+    return s;
   }
 }

@@ -157,6 +157,8 @@ class Weather {
         break;
     }
 
+    if (relevantStations.length == 0) return null;
+
     return relevantStations.map((e) {
       e.userLocation = geoposition;
       e.distance = e.geoposition.distanceFrom(geoposition);
@@ -202,7 +204,8 @@ class Weather {
         }
       });
 
-      DateTime serverTimestamp = DateTime.parse(data['items'][0]['timestamp']);
+      DateTime serverTimestamp =
+          DateTime.tryParse(data['items'][0]['timestamp']);
 
       (data['items'][0]['readings'] as List).forEach((element) {
         NearestStation station;
@@ -348,48 +351,58 @@ class Weather {
   }
 
   NearestStation _updateAirTemperatureAnomalies(NearestStation s) {
-    s.readingAnomaly = false;
-    s.timestampAnomaly =
-        s.airTemperatureTimestamp.difference(_timestamp).abs() >
-            constants.maxReadingRecency;
-    s.distanceAnomaly = s.distance > constants.maxDistance;
+    if (s != null) {
+      s.readingAnomaly = false;
+      s.timestampAnomaly =
+          s.airTemperatureTimestamp.difference(_timestamp).abs() >
+              constants.maxReadingRecency;
+      s.distanceAnomaly = s.distance > constants.maxDistance;
+    }
 
     return s;
   }
 
   NearestStation _updateRainfallAnomalies(NearestStation s) {
-    s.readingAnomaly = false;
-    s.timestampAnomaly = s.rainfallTimestamp.difference(_timestamp).abs() >
-        constants.maxReadingRecency;
-    s.distanceAnomaly = s.distance > constants.maxDistance;
+    if (s != null) {
+      s.readingAnomaly = false;
+      s.timestampAnomaly = s.rainfallTimestamp.difference(_timestamp).abs() >
+          constants.maxReadingRecency;
+      s.distanceAnomaly = s.distance > constants.maxDistance;
+    }
 
     return s;
   }
 
   NearestStation _updateRelativeHumidityAnomalies(NearestStation s) {
-    s.readingAnomaly = false;
-    s.timestampAnomaly =
-        s.relativeHumidityTimestamp.difference(_timestamp).abs() >
-            constants.maxReadingRecency;
-    s.distanceAnomaly = s.distance > constants.maxDistance;
+    if (s != null) {
+      s.readingAnomaly = false;
+      s.timestampAnomaly =
+          s.relativeHumidityTimestamp.difference(_timestamp).abs() >
+              constants.maxReadingRecency;
+      s.distanceAnomaly = s.distance > constants.maxDistance;
+    }
 
     return s;
   }
 
   NearestStation _updateWindDirectionWindSpeedAnomalies(NearestStation s) {
-    s.readingAnomaly = false;
-    s.timestampAnomaly = s.windSpeedTimestamp.difference(_timestamp).abs() >
-        constants.maxReadingRecency;
-    s.distanceAnomaly = s.distance > constants.maxDistance;
+    if (s != null) {
+      s.readingAnomaly = false;
+      s.timestampAnomaly = s.windSpeedTimestamp.difference(_timestamp).abs() >
+          constants.maxReadingRecency;
+      s.distanceAnomaly = s.distance > constants.maxDistance;
+    }
 
     return s;
   }
 
   NearestForecastArea _updateForecastAnomalies(NearestForecastArea f) {
-    f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
-    f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
-        constants.maxReadingRecency;
-    f.distanceAnomaly = f.distance > constants.maxDistance;
+    if (f != null) {
+      f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
+      f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
+          constants.maxReadingRecency;
+      f.distanceAnomaly = f.distance > constants.maxDistance;
+    }
 
     return f;
   }

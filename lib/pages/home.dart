@@ -391,6 +391,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       case 'Overcast':
         return WeatherIcons.cloudy;
 
+      case 'Windy':
+        return WeatherIcons.strong_wind;
+
       case 'Rain (Night)':
         return WeatherIcons.night_alt_rain;
 

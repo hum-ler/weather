@@ -177,14 +177,14 @@ class Weather {
     @required String url,
     @required WeatherReadingType type,
   }) async {
-    if (timestamp == null) return null;
+    if (timestamp == null) return;
 
     String fullUrl = url +
         '?date_time=' +
         timestamp.toIso8601String().replaceFirst(RegExp(r'\.\d+$'), '');
 
     dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    if (data == null) return;
 
     if (data['api_info']['status'] == 'healthy') {
       // Generate the list of all met stations from the metadata.
@@ -298,16 +298,18 @@ class Weather {
   /// Fetches actual data using the 2-hour weather forecast API.
   ///
   /// Updates [_forecastAreas].
-  Future<void> _fetch2HourWeatherForecasts(
-      {@required DateTime timestamp, @required String url}) async {
-    if (timestamp == null) return null;
+  Future<void> _fetch2HourWeatherForecasts({
+    @required DateTime timestamp,
+    @required String url,
+  }) async {
+    if (timestamp == null) return;
 
     String fullUrl = url +
         '?date_time=' +
         timestamp.toIso8601String().replaceFirst(RegExp(r'\.\d+$'), '');
 
     dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    if (data == null) return;
 
     if (data['api_info']['status'] == 'healthy') {
       // Generate the list of all met stations from the metadata.
@@ -327,7 +329,8 @@ class Weather {
         }
       });
 
-      DateTime serverTimestamp = DateTime.parse(data['items'][0]['timestamp']);
+      DateTime serverTimestamp =
+          DateTime.tryParse(data['items'][0]['timestamp']);
 
       (data['items'][0]['forecasts'] as List).forEach((element) {
         NearestForecastArea forecastArea;

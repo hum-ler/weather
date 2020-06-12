@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:weather/models/geoposition.dart';
 
-/// A forecast area.
+/// A forecast area used for 2-hour forecasts.
 class ForecastArea {
   /// The ID of this forecast area.
   String id;

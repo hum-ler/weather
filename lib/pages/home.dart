@@ -399,6 +399,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       'Heavy Thundery Showers': WeatherIcons.storm_showers,
       'Heavy Thundery Showers with Gusty Winds': WeatherIcons.storm_showers,
       'Light Rain': WeatherIcons.rain,
+      'Light Showers': WeatherIcons.showers,
       'Moderate Rain': WeatherIcons.rain,
       'Overcast': WeatherIcons.cloudy,
       'Partly Cloudy': WeatherIcons.cloud,

@@ -13,6 +13,9 @@ class ForecastRegion {
   /// The geographic coordinates of this forecast region.
   Geoposition geoposition;
 
+  /// The time when the forecast is last updated.
+  DateTime timestamp;
+
   /// The overall forecast for the next 24 hours.
   String overallForecast;
 
@@ -44,21 +47,33 @@ class ForecastRegion {
   String windSpeedUnit = 'm/s';
 
   /// The general wind direction for the next 24 hours.
-  WindDirection windDirection;
+  String windDirection;
 
-  /// The first 8-hour block in [forecasts].
+  /// The first block in [forecasts].
   ForecastChunk firstForecastChunk;
 
-  /// The start time of the first 8-hour block in [forecasts].
+  /// The start time of the first block in [forecasts].
   DateTime firstForecastChunkStartTime;
 
-  /// The collection of forecast for each 8-hour block.
+  /// The collection of forecasts for each block.
   Map<ForecastChunk, String> forecasts;
 
   ForecastRegion({
     @required this.id,
     @required this.name,
     @required this.geoposition,
+    this.timestamp,
+    this.overallForecast,
+    this.minAirTemperature,
+    this.maxAirTemperature,
+    this.airTemperatureUnit = '°C',
+    this.minRelativeHumidity,
+    this.maxRelativeHumidity,
+    this.relativeHumidityUnit = '%',
+    this.minWindSpeed,
+    this.maxWindSpeed,
+    this.windSpeedUnit = 'm/s',
+    this.windDirection,
   });
 }
 
@@ -81,22 +96,43 @@ class NearestForecastRegion extends ForecastRegion {
     @required String id,
     @required String name,
     @required Geoposition geoposition,
-  }) : super(id: id, name: name, geoposition: geoposition);
+    DateTime timestamp,
+    String overallForecast,
+    int minAirTemperature,
+    int maxAirTemperature,
+    String airTemperatureUnit = '°C',
+    int minRelativeHumidity,
+    int maxRelativeHumidity,
+    String relativeHumidityUnit = '%',
+    int minWindSpeed,
+    int maxWindSpeed,
+    String windSpeedUnit = 'm/s',
+    String windDirection,
+  }) : super(
+          id: id,
+          name: name,
+          geoposition: geoposition,
+          timestamp: timestamp,
+          overallForecast: overallForecast,
+          minAirTemperature: minAirTemperature,
+          maxAirTemperature: maxAirTemperature,
+          airTemperatureUnit: airTemperatureUnit,
+          minRelativeHumidity: minRelativeHumidity,
+          maxRelativeHumidity: maxRelativeHumidity,
+          relativeHumidityUnit: relativeHumidityUnit,
+          minWindSpeed: minWindSpeed,
+          maxWindSpeed: maxWindSpeed,
+          windSpeedUnit: windSpeedUnit,
+          windDirection: windDirection,
+        );
 }
 
-/// The general direction of the wind.
-enum WindDirection {
-  n,
-  ne,
-  e,
-  se,
-  s,
-  sw,
-  w,
-  nw,
-}
-
-/// A block of 8 hours.
+/// A block of time for which a forecast is available.
+///
+/// The length of each blocks is different:
+/// - morning -- 6 hours (typically 6AM to 12PM)
+/// - afternoon -- 6 hours (typically 12PM to 6PM)
+/// - night -- 12 hours (typically from 6PM tp 6AM)
 enum ForecastChunk {
   morning,
   afternoon,

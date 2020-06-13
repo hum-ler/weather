@@ -13,7 +13,7 @@ class ForecastArea {
   /// The geographic coordinates of this forecast area.
   Geoposition geoposition;
 
-  /// The time when the forecast is last retrieved.
+  /// The time when the forecast is last updated.
   DateTime timestamp;
 
   /// The 2-hour weather forecast.

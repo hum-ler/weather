@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:weather/models/geoposition.dart';
+
 /// The mean Earth radius in km.
 ///
 /// See https://en.wikipedia.org/wiki/Earth_radius.
@@ -24,6 +26,36 @@ const Duration maxReadingRecency = Duration(minutes: 45);
 /// The maximum distance in km for a station or forecast area to be considered
 /// near.
 const double maxDistance = 10.0;
+
+/// The reference position for the central forecast region.
+const Geoposition centralRegion = Geoposition(
+  latitude: 1.360195,
+  longitude: 103.815675,
+);
+
+/// The reference position for the north forecast region.
+const Geoposition northRegion = Geoposition(
+  latitude: 1.439147,
+  longitude: 103.815675,
+);
+
+/// The reference position for the east forecast region.
+const Geoposition eastRegion = Geoposition(
+  latitude: 1.360195,
+  longitude: 103.992073,
+);
+
+/// The reference position for the south forecast region.
+const Geoposition southRegion = Geoposition(
+  latitude: 1.290981,
+  longitude: 103.815675,
+);
+
+/// The reference position for the west forecast region.
+const Geoposition westRegion = Geoposition(
+  latitude: 1.360195,
+  longitude: 103.669195,
+);
 
 /// The URL of realtime air temperature readings API (at Data.gov.sg).
 ///
@@ -68,8 +100,16 @@ const String windSpeedUrl = 'https://api.data.gov.sg/v1/environment/wind-speed';
 /// Updates every 30 minutes. Takes parameter date_time=<ISO8601>.
 ///
 /// See https://data.gov.sg/dataset/weather-forecast.
-const String forecastUrl =
+const String forecast2HourUrl =
     'https://api.data.gov.sg/v1/environment/2-hour-weather-forecast';
+
+/// The URL of the 24-hour weather forecast API (at Data.gov.sg).
+///
+/// Takes parameter date_time=<ISO8601>.
+///
+/// See https://data.gov.sg/dataset/weather-forecast.
+const String forecast24HourUrl =
+    'https://api.data.gov.sg/v1/environment/24-hour-weather-forecast';
 
 /// The style for small-size text.
 const TextStyle smallTextStyle = TextStyle(

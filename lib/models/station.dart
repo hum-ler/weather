@@ -13,7 +13,7 @@ class Station {
   /// The geographic coordinates of this station.
   Geoposition geoposition;
 
-  /// The time when the readings are last retrieved.
+  /// The time when the readings are last updated.
   DateTime timestamp;
 
   /// The realtime air temperature reading.

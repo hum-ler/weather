@@ -30,7 +30,7 @@ Future<dynamic> httpGetJsonData(String url) async {
 double degreesToRadians(double deg) => deg * pi / 180;
 
 /// Converts from knots to meters per second.
-double knotsToMetersPerSecond(double knots) {
+double knotsToMetersPerSecond(num knots) {
   return knots * constants.knotToMetersPerSecond;
 }
 

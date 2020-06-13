@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:weather/models/forecast_area.dart';
+import 'package:weather/models/forecast_region.dart';
 import 'package:weather/models/geoposition.dart';
 import 'package:weather/models/station.dart';
 import 'package:weather/utils/constants.dart' as constants;
@@ -31,6 +32,14 @@ class Weather {
   /// convenience for [findNearest2HourForecast()].
   Map<String, NearestForecastArea> _forecastAreas;
 
+  /// The collection of [NearestForecastRegion]s.
+  ///
+  /// Uses [ForecastRegion.id] as the key.
+  ///
+  /// Using type [NearestForecastRegion] instead of [ForecastRegion] as a
+  /// convenience for [findNearest24HourForecast()].
+  Map<String, NearestForecastRegion> _forecastRegions;
+
   /// The time when [fetchReadings()] is last called.
   DateTime _timestamp;
 
@@ -46,6 +55,7 @@ class Weather {
 
     _stations = <String, NearestStation>{};
     _forecastAreas = <String, NearestForecastArea>{};
+    _forecastRegions = <String, NearestForecastRegion>{};
 
     await _fetchAirTemperature(timestamp: timestamp);
     await _fetchRainfall(timestamp: timestamp);
@@ -55,7 +65,11 @@ class Weather {
 
     await _fetch2HourWeatherForecasts(
       timestamp: timestamp,
-      url: constants.forecastUrl,
+      url: constants.forecast2HourUrl,
+    );
+    await _fetch24HourWeatherForecasts(
+      timestamp: timestamp,
+      url: constants.forecast24HourUrl,
     );
 
     _timestamp = timestamp;
@@ -179,15 +193,14 @@ class Weather {
   }) async {
     if (timestamp == null) return;
 
-    String fullUrl = url +
-        '?date_time=' +
-        timestamp.toIso8601String().replaceFirst(RegExp(r'\.\d+$'), '');
+    String fullUrl =
+        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return;
 
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the list of all met stations from the metadata.
+      // Generate the list of all stations from the metadata.
       Map<String, NearestStation> potentialStations =
           <String, NearestStation>{};
 
@@ -304,15 +317,14 @@ class Weather {
   }) async {
     if (timestamp == null) return;
 
-    String fullUrl = url +
-        '?date_time=' +
-        timestamp.toIso8601String().replaceFirst(RegExp(r'\.\d+$'), '');
+    String fullUrl =
+        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return;
 
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the list of all met stations from the metadata.
+      // Generate the list of all areas from the metadata.
       Map<String, NearestForecastArea> potentialForecastAreas =
           <String, NearestForecastArea>{};
 
@@ -335,11 +347,7 @@ class Weather {
       (data['items'][0]['forecasts'] as List).forEach((element) {
         NearestForecastArea forecastArea;
 
-        // Look for an existing station in [_forecastAreas] first. Otherwise,
-        // copy over the new one from [potentialForecastAreas].
-        if (_forecastAreas.containsKey(element['area'])) {
-          forecastArea = _forecastAreas[element['area']];
-        } else if (potentialForecastAreas.containsKey(element['area'])) {
+        if (potentialForecastAreas.containsKey(element['area'])) {
           forecastArea = potentialForecastAreas[element['area']];
           _forecastAreas[forecastArea.id] = forecastArea;
         }
@@ -350,6 +358,127 @@ class Weather {
           forecastArea.timestamp = timestamp;
         }
       });
+    }
+  }
+
+  /// Fetches actual data using the 24-hour weather forecast API.
+  ///
+  /// Updates [_forecastRegions].
+  Future<void> _fetch24HourWeatherForecasts({
+    @required DateTime timestamp,
+    @required String url,
+  }) async {
+    if (timestamp == null) return;
+
+    String fullUrl =
+        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+
+    dynamic data = await httpGetJsonData(fullUrl);
+    if (data == null) return;
+
+    List<String> supportedRegions = <String>[
+      'central',
+      'north',
+      'east',
+      'south',
+      'west',
+    ];
+
+    if (data['api_info']['status'] == 'healthy') {
+      // Gather the common details across regions.
+      DateTime serverTimestamp =
+          DateTime.tryParse(data['items'][0]['timestamp']);
+      String overallForecast = data['items'][0]['general']['forecast'];
+      int minAirTemperature = data['items'][0]['general']['temperature']['low'];
+      int maxAirTemperature =
+          data['items'][0]['general']['temperature']['high'];
+      int minRelativeHumidity =
+          data['items'][0]['general']['relative_humidity']['low'];
+      int maxRelativeHumidity =
+          data['items'][0]['general']['relative_humidity']['high'];
+      int minWindSpeed = knotsToMetersPerSecond(
+              data['items'][0]['general']['wind']['speed']['low'])
+          .round();
+      int maxWindSpeed = knotsToMetersPerSecond(
+              data['items'][0]['general']['wind']['speed']['high'])
+          .round();
+      String windDirection = data['items'][0]['general']['wind']['direction'];
+
+      // Prepare a fresh object for each region and fill in the common details.
+      supportedRegions.forEach((element) {
+        _forecastRegions[element] = NearestForecastRegion(
+          id: element,
+          name: element,
+          geoposition: _getPositionFromRegionName(element),
+          timestamp: serverTimestamp,
+          overallForecast: overallForecast,
+          minAirTemperature: minAirTemperature,
+          maxAirTemperature: maxAirTemperature,
+          minRelativeHumidity: minRelativeHumidity,
+          maxRelativeHumidity: maxRelativeHumidity,
+          minWindSpeed: minWindSpeed,
+          maxWindSpeed: maxWindSpeed,
+          windDirection: windDirection,
+        );
+      });
+
+      (data['items'][0]['periods'] as List).asMap().forEach((index, element) {
+        DateTime forecastChunkStartTime =
+            DateTime.parse(element['time']['start']);
+
+        ForecastChunk forecastChunk;
+        switch (forecastChunkStartTime.toLocal().hour) {
+          case 6:
+            forecastChunk = ForecastChunk.morning;
+            break;
+
+          case 12:
+            forecastChunk = ForecastChunk.afternoon;
+            break;
+
+          case 18:
+            forecastChunk = ForecastChunk.night;
+            break;
+        }
+
+        if (forecastChunk != null) {
+          supportedRegions.forEach((region) {
+            _forecastRegions[region].forecasts ??= <ForecastChunk, String>{};
+
+            _forecastRegions[region].forecasts[forecastChunk] =
+                element['regions'][region];
+
+            if (index == 0) {
+              _forecastRegions[region]
+                ..firstForecastChunk = forecastChunk
+                ..firstForecastChunkStartTime = forecastChunkStartTime;
+            }
+          });
+        }
+      });
+    }
+  }
+
+  /// Gets the reference [Geoposition] for the region with [regionName].
+  Geoposition _getPositionFromRegionName(String regionName) {
+    switch (regionName) {
+      case 'central':
+        return constants.centralRegion;
+
+      case 'north':
+        return constants.northRegion;
+
+      case 'east':
+        return constants.eastRegion;
+
+      case 'south':
+        return constants.southRegion;
+
+      case 'west':
+        return constants.westRegion;
+
+      default:
+        return null;
     }
   }
 

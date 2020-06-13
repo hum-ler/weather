@@ -34,7 +34,7 @@ class Geolocation {
     double lambda2 = degreesToRadians(p2.longitude);
 
     return 2 *
-        constants.meanEarthRadius *
+        constants.equatorialRadius *
         asin(sqrt(_haversin(phi2 - phi1) +
             cos(phi1) * cos(phi2) * _haversin(lambda2 - lambda1)));
   }

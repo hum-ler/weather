@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 /// See https://en.wikipedia.org/wiki/Earth_radius.
 const double meanEarthRadius = 6371.0088;
 
+/// The equatorial radius in km.
+///
+/// See https://en.wikipedia.org/wiki/Earth_radius.
+const double equatorialRadius = 6378.137;
+
 /// The conversion factor from knot to m/s.
 ///
 /// See https://en.wikipedia.org/wiki/Knot_(unit).

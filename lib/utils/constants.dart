@@ -93,3 +93,19 @@ const Color anomalyHighlight = Colors.red;
 
 /// The pattern for displaying [DateTime]s to the user.
 const String dateTimePattern = 'd MMM H:mm';
+
+/// The app light theme.
+final ThemeData lightTheme = ThemeData.light().copyWith(
+  primaryColor: Color(0xFFFF5722),
+  primaryColorLight: Color(0xFFFFCCBC),
+  primaryColorDark: Color(0xFFE64A19),
+  accentColor: Color(0xFFFF9800),
+);
+
+/// The app dark theme.
+final ThemeData darkTheme = ThemeData.dark().copyWith(
+  primaryColor: Color(0xFFFF5722),
+  primaryColorLight: Color(0xFFFFCCBC),
+  primaryColorDark: Color(0xFFE64A19),
+  accentColor: Color(0xFFFF9800),
+);

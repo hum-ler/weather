@@ -77,6 +77,9 @@ const TextStyle largeTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+/// The maximum length of a weather condition in the display.
+const int maxConditionLength = 24;
+
 /// The maximum length of a station or forecast area name in the display.
 const int maxStationAreaNameLength = 18;
 

@@ -321,7 +321,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                 : null,
                           ),
                           Text(
-                            _condition.forecast,
+                            _condition.forecast.truncate(
+                              constants.maxConditionLength,
+                              ellipsis: '…',
+                            ),
                             style: _condition.forecastAnomaly
                                 ? constants.smallTextStyle
                                     .copyWith(color: constants.anomalyHighlight)
@@ -393,6 +396,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       'Hazy': WeatherIcons.dust,
       'Hazy (Day)': WeatherIcons.day_haze,
       'Hazy (Night)': WeatherIcons.dust,
+      'Heavy Thundery Showers': WeatherIcons.thunderstorm,
+      'Heavy Thundery Showers with Gusty Winds': WeatherIcons.thunderstorm,
       'Moderate Rain': WeatherIcons.rain,
       'Overcast': WeatherIcons.cloudy,
       'Partly Cloudy (Day)': WeatherIcons.day_cloudy,

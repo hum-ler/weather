@@ -134,7 +134,19 @@ class Weather {
       return e;
     }).reduce((v, e) => v.distance < e.distance ? v : e);
 
-    return _updateForecastAnomalies(f);
+    return _update2HourForecastAnomalies(f);
+  }
+
+  NearestForecastRegion nearest24HourForecast(Geoposition geoposition) {
+    NearestForecastRegion f = _forecastRegions.values
+        .where((e) => e.overallForecast != null)
+        .map((e) {
+      e.userLocation = geoposition;
+      e.distance = e.geoposition.distanceFrom(geoposition);
+      return e;
+    }).reduce((v, e) => v.distance < e.distance ? v : e);
+
+    return _update24HourForecastAnomalies(f);
   }
 
   /// Picks the nearest station out of [_stations] for reading [type].
@@ -528,10 +540,24 @@ class Weather {
     return s;
   }
 
-  NearestForecastArea _updateForecastAnomalies(NearestForecastArea f) {
+  NearestForecastArea _update2HourForecastAnomalies(NearestForecastArea f) {
     if (f != null) {
       f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
       f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
+          constants.maxReadingRecency;
+      f.distanceAnomaly = f.distance > constants.maxDistance;
+    }
+
+    return f;
+  }
+
+  NearestForecastRegion _update24HourForecastAnomalies(
+      NearestForecastRegion f) {
+    if (f != null) {
+      f.forecastAnomaly = f.overallForecast == null ||
+          f.overallForecast.isEmpty ||
+          f.forecasts.length != 3;
+      f.timestampAnomaly = f.timestamp.difference(_timestamp).abs() >
           constants.maxReadingRecency;
       f.distanceAnomaly = f.distance > constants.maxDistance;
     }

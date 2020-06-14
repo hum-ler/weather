@@ -58,6 +58,16 @@ class ForecastRegion {
   /// The collection of forecasts for each block.
   Map<ForecastChunk, String> forecasts;
 
+  /// Indicates whether any of the forecasts is unexpected.
+  ///
+  /// For example, an empty string.
+  bool forecastAnomaly;
+
+  /// Indicates whether the server timestamp is unexpected.
+  ///
+  /// For example, not recent enough to be considered realtime.
+  bool timestampAnomaly;
+
   ForecastRegion({
     @required this.id,
     @required this.name,

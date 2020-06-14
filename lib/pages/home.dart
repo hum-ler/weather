@@ -121,6 +121,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                         .toString()
                                         .asEnumLabel()
                                         .capitalize(),
+                                    color: _region.forecastAnomaly ||
+                                            _region.distanceAnomaly ||
+                                            _region.timestampAnomaly
+                                        ? constants.anomalyHighlight
+                                        : null,
                                   ),
                               ],
                             ),
@@ -385,6 +390,100 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           ),
                         ],
                       ),
+                    if (_region != null)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          _BoxedIcon(
+                            icon: Icons.language,
+                            color: _region.forecastAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            _region.overallForecast.truncate(
+                              constants.maxConditionLength,
+                              ellipsis: '…',
+                            ),
+                            style: _region.forecastAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                          SizedBox(width: 4.0),
+                          _BoxedIcon(
+                            icon: Icons.place,
+                            color: _region.distanceAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            '${_region.name.capitalize()} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
+                            style: _region.distanceAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                          SizedBox(width: 4.0),
+                          _BoxedIcon(
+                            icon: Icons.schedule,
+                            color: _region.timestampAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            '${_region.timestamp.toLocal().format(constants.dateTimePattern)}',
+                            style: _region.timestampAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                        ],
+                      ),
+                    if (_region != null)
+                      for (ForecastChunk forecastChunk in _region.forecastOrder)
+                        Row(
+                          children: <Widget>[
+                            _BoxedIcon(
+                              icon: Icons.keyboard_arrow_right,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            _BoxedIcon(
+                              icon: Icons.schedule,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            Text(
+                              forecastChunk
+                                  .toString()
+                                  .asEnumLabel()
+                                  .capitalize(),
+                              style: _region.forecastAnomaly
+                                  ? constants.smallTextStyle.copyWith(
+                                      color: constants.anomalyHighlight,
+                                    )
+                                  : constants.smallTextStyle,
+                            ),
+                            SizedBox(width: 4.0),
+                            _BoxedIcon(
+                              icon: Icons.language,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            Text(
+                              _region.forecasts[forecastChunk],
+                              style: _region.forecastAnomaly
+                                  ? constants.smallTextStyle.copyWith(
+                                      color: constants.anomalyHighlight,
+                                    )
+                                  : constants.smallTextStyle,
+                            ),
+                          ],
+                        ),
                     if (_fetchTimestamp != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),

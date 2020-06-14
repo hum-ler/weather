@@ -6,6 +6,7 @@ import 'package:weather/models/forecast_area.dart';
 import 'package:weather/models/forecast_region.dart';
 import 'package:weather/models/geoposition.dart';
 import 'package:weather/models/station.dart';
+import 'package:weather/pages/about.dart';
 import 'package:weather/services/geolocation.dart';
 import 'package:weather/services/weather.dart';
 import 'package:weather/utils/constants.dart' as constants;
@@ -61,6 +62,21 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         title: Text('Weather — Right Here, Right Now'),
+        actions: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => About()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Icon(Icons.help),
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         key: _refreshIndicatorKey,

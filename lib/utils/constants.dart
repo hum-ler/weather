@@ -57,6 +57,9 @@ const Geoposition westRegion = Geoposition(
   longitude: 103.669195,
 );
 
+/// The maximum distance in km for a forecast region to be considered near.
+const double maxRegionDistance = 20.0;
+
 /// The URL of realtime air temperature readings API (at Data.gov.sg).
 ///
 /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is °C.
@@ -116,6 +119,11 @@ const TextStyle smallTextStyle = TextStyle(
   fontSize: 12.0,
 );
 
+/// The style for medium-size text.
+const TextStyle mediumTextStyle = TextStyle(
+  fontSize: 14.0,
+);
+
 /// The style for large-size text.
 const TextStyle largeTextStyle = TextStyle(
   fontSize: 100.0,
@@ -130,6 +138,9 @@ const int maxStationAreaNameLength = 18;
 
 /// The size of small icons.
 const double smallIconSize = 10.0;
+
+/// The size of medium icons.
+const double mediumIconSize = 48.0;
 
 /// The size of large icons.
 const double largeIconSize = 100.0;

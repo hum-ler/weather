@@ -55,6 +55,9 @@ class ForecastRegion {
   /// The start time of the first block in [forecasts].
   DateTime firstForecastChunkStartTime;
 
+  /// The chronological order for the blocks in [forecasts].
+  List<ForecastChunk> forecastOrder;
+
   /// The collection of forecasts for each block.
   Map<ForecastChunk, String> forecasts;
 

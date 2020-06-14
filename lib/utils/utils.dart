@@ -70,4 +70,16 @@ extension StringExtension on String {
     ellipsis ??= '';
     return this.substring(0, maxLength - ellipsis.length) + ellipsis;
   }
+
+  /// Removes the class name from an enum [toString()].
+  String asEnumLabel({bool capitalize = false}) {
+    return this.replaceFirst(RegExp(r'^[^\.]+\.'), '');
+  }
+
+  /// Sets the first character to upper case.
+  String capitalize() {
+    if (this.isEmpty) return this;
+
+    return this.replaceRange(0, 1, this[0].toUpperCase());
+  }
 }

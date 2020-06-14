@@ -464,6 +464,32 @@ class Weather {
               _forecastRegions[region]
                 ..firstForecastChunk = forecastChunk
                 ..firstForecastChunkStartTime = forecastChunkStartTime;
+
+              switch (forecastChunk) {
+                case ForecastChunk.morning:
+                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                    ForecastChunk.morning,
+                    ForecastChunk.afternoon,
+                    ForecastChunk.night,
+                  ];
+                  break;
+
+                case ForecastChunk.afternoon:
+                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                    ForecastChunk.afternoon,
+                    ForecastChunk.night,
+                    ForecastChunk.morning,
+                  ];
+                  break;
+
+                case ForecastChunk.night:
+                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                    ForecastChunk.night,
+                    ForecastChunk.morning,
+                    ForecastChunk.afternoon,
+                  ];
+                  break;
+              }
             }
           });
         }
@@ -559,7 +585,7 @@ class Weather {
           f.forecasts.length != 3;
       f.timestampAnomaly = f.timestamp.difference(_timestamp).abs() >
           constants.maxReadingRecency;
-      f.distanceAnomaly = f.distance > constants.maxDistance;
+      f.distanceAnomaly = f.distance > constants.maxRegionDistance;
     }
 
     return f;

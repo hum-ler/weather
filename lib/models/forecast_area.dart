@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:weather/models/geoposition.dart';
 
-/// A forecast area.
+/// A forecast area used for 2-hour forecasts.
 class ForecastArea {
   /// The ID of this forecast area.
   String id;
@@ -13,7 +13,7 @@ class ForecastArea {
   /// The geographic coordinates of this forecast area.
   Geoposition geoposition;
 
-  /// The time when the forecast is last retrieved.
+  /// The time when the forecast is last updated.
   DateTime timestamp;
 
   /// The 2-hour weather forecast.

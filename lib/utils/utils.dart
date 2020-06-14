@@ -30,7 +30,7 @@ Future<dynamic> httpGetJsonData(String url) async {
 double degreesToRadians(double deg) => deg * pi / 180;
 
 /// Converts from knots to meters per second.
-double knotsToMetersPerSecond(double knots) {
+double knotsToMetersPerSecond(num knots) {
   return knots * constants.knotToMetersPerSecond;
 }
 
@@ -69,5 +69,17 @@ extension StringExtension on String {
 
     ellipsis ??= '';
     return this.substring(0, maxLength - ellipsis.length) + ellipsis;
+  }
+
+  /// Removes the class name from an enum [toString()].
+  String asEnumLabel({bool capitalize = false}) {
+    return this.replaceFirst(RegExp(r'^[^\.]+\.'), '');
+  }
+
+  /// Sets the first character to upper case.
+  String capitalize() {
+    if (this.isEmpty) return this;
+
+    return this.replaceRange(0, 1, this[0].toUpperCase());
   }
 }

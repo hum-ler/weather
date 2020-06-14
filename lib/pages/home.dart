@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 import 'package:weather/models/forecast_area.dart';
+import 'package:weather/models/forecast_region.dart';
 import 'package:weather/models/geoposition.dart';
 import 'package:weather/models/station.dart';
 import 'package:weather/services/geolocation.dart';
@@ -24,6 +25,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   NearestStation _relativeHumidity;
   NearestStation _wind;
   NearestForecastArea _condition;
+  NearestForecastRegion _region;
 
   /// Generate a key for the refresh indicator.
   ///
@@ -75,29 +77,57 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          if (_airTemperature != null)
-                            Text(
-                              '${_airTemperature.airTemperature.round().toString()}°',
-                              style: _airTemperature.readingAnomaly ||
-                                      _airTemperature.timestampAnomaly ||
-                                      _airTemperature.distanceAnomaly
-                                  ? constants.largeTextStyle.copyWith(
-                                      color: constants.anomalyHighlight)
-                                  : constants.largeTextStyle,
-                            ),
-                          if (_condition != null)
-                            BoxedIcon(
-                              _getConditionIcon(_condition.forecast),
-                              size: constants.largeIconSize,
-                              color: _condition.forecastAnomaly ||
-                                      _condition.timestampAnomaly ||
-                                      _condition.distanceAnomaly
-                                  ? constants.anomalyHighlight
-                                  : null,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              if (_airTemperature != null)
+                                Text(
+                                  '${_airTemperature.airTemperature.round().toString()}°',
+                                  style: _airTemperature.readingAnomaly ||
+                                          _airTemperature.timestampAnomaly ||
+                                          _airTemperature.distanceAnomaly
+                                      ? constants.largeTextStyle.copyWith(
+                                          color: constants.anomalyHighlight)
+                                      : constants.largeTextStyle,
+                                ),
+                              if (_condition != null)
+                                BoxedIcon(
+                                  _getConditionIcon(_condition.forecast),
+                                  size: constants.largeIconSize,
+                                  color: _condition.forecastAnomaly ||
+                                          _condition.timestampAnomaly ||
+                                          _condition.distanceAnomaly
+                                      ? constants.anomalyHighlight
+                                      : null,
+                                ),
+                            ],
+                          ),
+                          if (_region != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                for (ForecastChunk forecastChunk
+                                    in _region.forecastOrder)
+                                  _ForecastChunk(
+                                    icon: _getConditionIcon(
+                                      _region.forecasts[forecastChunk],
+                                    ),
+                                    label: forecastChunk
+                                        .toString()
+                                        .asEnumLabel()
+                                        .capitalize(),
+                                    color: _region.forecastAnomaly ||
+                                            _region.distanceAnomaly ||
+                                            _region.timestampAnomaly
+                                        ? constants.anomalyHighlight
+                                        : null,
+                                  ),
+                              ],
                             ),
                         ],
                       ),
@@ -360,6 +390,100 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           ),
                         ],
                       ),
+                    if (_region != null)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          _BoxedIcon(
+                            icon: Icons.language,
+                            color: _region.forecastAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            _region.overallForecast.truncate(
+                              constants.maxConditionLength,
+                              ellipsis: '…',
+                            ),
+                            style: _region.forecastAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                          SizedBox(width: 4.0),
+                          _BoxedIcon(
+                            icon: Icons.place,
+                            color: _region.distanceAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            '${_region.name.capitalize()} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
+                            style: _region.distanceAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                          SizedBox(width: 4.0),
+                          _BoxedIcon(
+                            icon: Icons.schedule,
+                            color: _region.timestampAnomaly
+                                ? constants.anomalyHighlight
+                                : null,
+                          ),
+                          Text(
+                            '${_region.timestamp.toLocal().format(constants.dateTimePattern)}',
+                            style: _region.timestampAnomaly
+                                ? constants.smallTextStyle
+                                    .copyWith(color: constants.anomalyHighlight)
+                                : constants.smallTextStyle,
+                          ),
+                        ],
+                      ),
+                    if (_region != null)
+                      for (ForecastChunk forecastChunk in _region.forecastOrder)
+                        Row(
+                          children: <Widget>[
+                            _BoxedIcon(
+                              icon: Icons.keyboard_arrow_right,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            _BoxedIcon(
+                              icon: Icons.schedule,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            Text(
+                              forecastChunk
+                                  .toString()
+                                  .asEnumLabel()
+                                  .capitalize(),
+                              style: _region.forecastAnomaly
+                                  ? constants.smallTextStyle.copyWith(
+                                      color: constants.anomalyHighlight,
+                                    )
+                                  : constants.smallTextStyle,
+                            ),
+                            SizedBox(width: 4.0),
+                            _BoxedIcon(
+                              icon: Icons.language,
+                              color: _region.forecastAnomaly
+                                  ? constants.anomalyHighlight
+                                  : null,
+                            ),
+                            Text(
+                              _region.forecasts[forecastChunk],
+                              style: _region.forecastAnomaly
+                                  ? constants.smallTextStyle.copyWith(
+                                      color: constants.anomalyHighlight,
+                                    )
+                                  : constants.smallTextStyle,
+                            ),
+                          ],
+                        ),
                     if (_fetchTimestamp != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0),
@@ -399,6 +523,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       'Heavy Thundery Showers': WeatherIcons.storm_showers,
       'Heavy Thundery Showers with Gusty Winds': WeatherIcons.storm_showers,
       'Light Rain': WeatherIcons.rain,
+      'Light Showers': WeatherIcons.showers,
       'Moderate Rain': WeatherIcons.rain,
       'Overcast': WeatherIcons.cloudy,
       'Partly Cloudy': WeatherIcons.cloud,
@@ -433,6 +558,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         _relativeHumidity = null;
         _wind = null;
         _condition = null;
+        _region = null;
         _fetchTimestamp = DateTime.now();
       });
 
@@ -446,8 +572,49 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         _relativeHumidity = Weather().nearestRelativeHumidity(p);
         _wind = Weather().nearestWindDirectionWindSpeed(p);
         _condition = Weather().nearest2HourForecast(p);
+        _region = Weather().nearest24HourForecast(p);
       });
     }
+  }
+}
+
+/// Displays the forecast for a [ForecastChunk].
+class _ForecastChunk extends StatelessWidget {
+  final IconData icon;
+
+  final String label;
+
+  final Color color;
+
+  const _ForecastChunk({
+    @required this.icon,
+    @required this.label,
+    this.color,
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(minWidth: 74.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          BoxedIcon(
+            icon,
+            size: constants.mediumIconSize,
+            color: color,
+          ),
+          SizedBox(height: 4.0),
+          Text(
+            label,
+            style: color != null
+                ? constants.mediumTextStyle.copyWith(color: color)
+                : constants.mediumTextStyle,
+          ),
+        ],
+      ),
+    );
   }
 }
 

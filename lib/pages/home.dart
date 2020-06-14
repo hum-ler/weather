@@ -111,31 +111,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Text(_region.name),
-                                _ForecastChunk(
-                                  icon: _getConditionIcon(_region
-                                      .forecasts[_region.forecastOrder[0]]),
-                                  label: _region.forecastOrder[0]
-                                      .toString()
-                                      .asEnumLabel()
-                                      .capitalize(),
-                                ),
-                                _ForecastChunk(
-                                  icon: _getConditionIcon(_region
-                                      .forecasts[_region.forecastOrder[1]]),
-                                  label: _region.forecastOrder[1]
-                                      .toString()
-                                      .asEnumLabel()
-                                      .capitalize(),
-                                ),
-                                _ForecastChunk(
-                                  icon: _getConditionIcon(_region
-                                      .forecasts[_region.forecastOrder[2]]),
-                                  label: _region.forecastOrder[2]
-                                      .toString()
-                                      .asEnumLabel()
-                                      .capitalize(),
-                                ),
+                                for (ForecastChunk forecastChunk
+                                    in _region.forecastOrder)
+                                  _ForecastChunk(
+                                    icon: _getConditionIcon(
+                                      _region.forecasts[forecastChunk],
+                                    ),
+                                    label: forecastChunk
+                                        .toString()
+                                        .asEnumLabel()
+                                        .capitalize(),
+                                  ),
                               ],
                             ),
                         ],

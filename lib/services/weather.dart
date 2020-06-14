@@ -440,6 +440,10 @@ class Weather {
 
         ForecastChunk forecastChunk;
         switch (forecastChunkStartTime.toLocal().hour) {
+          case 0:
+            forecastChunk = ForecastChunk.predawn;
+            break;
+
           case 6:
             forecastChunk = ForecastChunk.morning;
             break;
@@ -466,6 +470,15 @@ class Weather {
                 ..firstForecastChunkStartTime = forecastChunkStartTime;
 
               switch (forecastChunk) {
+                case ForecastChunk.predawn:
+                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                    ForecastChunk.predawn,
+                    ForecastChunk.morning,
+                    ForecastChunk.afternoon,
+                    ForecastChunk.night,
+                  ];
+                  break;
+
                 case ForecastChunk.morning:
                   _forecastRegions[region].forecastOrder = <ForecastChunk>[
                     ForecastChunk.morning,
@@ -582,9 +595,9 @@ class Weather {
     if (f != null) {
       f.forecastAnomaly = f.overallForecast == null ||
           f.overallForecast.isEmpty ||
-          f.forecasts.length != 3;
+          (f.forecasts.length != 3 && f.forecasts.length != 4);
       f.timestampAnomaly = f.timestamp.difference(_timestamp).abs() >
-          constants.maxReadingRecency;
+          constants.max24HourForecastRecency;
       f.distanceAnomaly = f.distance > constants.maxRegionDistance;
     }
 

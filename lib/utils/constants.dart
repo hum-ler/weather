@@ -23,6 +23,9 @@ const Duration minFetchPeriod = Duration(minutes: 15);
 /// The maximum period for a reading to be considered realtime.
 const Duration maxReadingRecency = Duration(minutes: 45);
 
+/// The maximum period for a 24-hour forecast to be considered up-to-date.
+const Duration max24HourForecastRecency = Duration(hours: 3);
+
 /// The maximum distance in km for a station or forecast area to be considered
 /// near.
 const double maxDistance = 10.0;

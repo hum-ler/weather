@@ -142,11 +142,16 @@ class NearestForecastRegion extends ForecastRegion {
 
 /// A block of time for which a forecast is available.
 ///
-/// The length of each blocks is different:
-/// - morning -- 6 hours (typically 6AM to 12PM)
-/// - afternoon -- 6 hours (typically 12PM to 6PM)
-/// - night -- 12 hours (typically from 6PM tp 6AM)
+/// The length of each block could be 6 or 12 hours:
+/// - predawn -- 6 hours (typically from 12AM to 6AM)
+/// - morning -- 6 hours (typically from 6AM to 12PM)
+/// - afternoon -- 6 hours (typically from 12PM to 6PM)
+/// - night -- 6 or 12 hours (typically from 6PM to 12AM, or 6PM to 6AM)
+///
+/// predawn is only applicable to cases where the night time is split into two
+/// different chunks on separate days.
 enum ForecastChunk {
+  predawn,
   morning,
   afternoon,
   night,

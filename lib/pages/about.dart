@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
   final String _title = 'Weather 0.1';
@@ -50,8 +51,12 @@ class About extends StatelessWidget {
                 // Force canvas to take up 60% of available space.
                 height: MediaQuery.of(context).size.height * 0.6,
               ),
-              // TODO: Handle onTapLink.
-              child: Markdown(data: _data),
+              child: Markdown(
+                data: _data,
+                onTapLink: (url) async {
+                  if (await canLaunch(url)) launch(url);
+                },
+              ),
             ),
           ),
         ],

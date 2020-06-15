@@ -72,7 +72,7 @@ extension StringExtension on String {
   }
 
   /// Removes the class name from an enum [toString()].
-  String asEnumLabel({bool capitalize = false}) {
+  String asEnumLabel() {
     return this.replaceFirst(RegExp(r'^[^\.]+\.'), '');
   }
 

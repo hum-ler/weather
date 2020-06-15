@@ -1,6 +1,6 @@
 # weather
 
-Weather — Right Here, Right Now
+Weather · Right Here · Right Now
 
 ## Credits
 

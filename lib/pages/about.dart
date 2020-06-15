@@ -4,7 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
-  final String _title = 'Weather 0.1';
+  final String _title = 'Weather · Right Here · Right Now · 0.1';
   final String _data = r'''
 ## Credits
 

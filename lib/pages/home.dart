@@ -61,7 +61,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Weather — Right Here, Right Now'),
+        title: Text('Weather · Right Here · Right Now'),
         actions: <Widget>[
           GestureDetector(
             behavior: HitTestBehavior.translucent,

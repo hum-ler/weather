@@ -65,18 +65,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text('Weather · Right Here · Right Now'),
         actions: <Widget>[
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
+          IconButton(
+            icon: Icon(Icons.help),
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => About()),
               );
             },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(Icons.help),
-            ),
           ),
         ],
       ),

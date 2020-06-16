@@ -31,17 +31,10 @@ This app is written using [Flutter SDK](https://flutter.dev) 1.17.3 and includes
       body: Column(
         children: <Widget>[
           Expanded(
-            // TODO: To cater for landscape orientation, it might be better to
-            // crop the image and allow it to scale automatically.
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 120.0,
-              height: 120.0,
-              fit: BoxFit.none,
-            ),
+            child: Image.asset('assets/images/logo.png'),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
               _title,
               textAlign: TextAlign.center,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/models/geoposition.dart';
+import 'geoposition.dart';
 
 /// A forecast area used for 2-hour forecasts.
 class ForecastArea {

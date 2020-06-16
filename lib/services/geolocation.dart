@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:geolocator/geolocator.dart';
 
-import 'package:weather/models/geoposition.dart';
-import 'package:weather/utils/constants.dart' as constants;
-import 'package:weather/utils/utils.dart';
+import '../models/geoposition.dart';
+import '../utils/constants.dart' as constants;
+import '../utils/math_utils.dart';
 
 /// The geolocation service.
 class Geolocation {

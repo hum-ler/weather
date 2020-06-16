@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/pages/home.dart';
-import 'package:weather/utils/constants.dart' as constants;
+import 'pages/home.dart';
+import 'utils/config.dart' as config;
 
 void main() {
   runApp(MaterialApp(
     home: Home(),
-    theme: constants.lightTheme,
-    darkTheme: constants.darkTheme,
+    theme: config.lightTheme,
+    darkTheme: config.darkTheme,
   ));
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/models/geoposition.dart';
+import 'geoposition.dart';
 
 /// A forecast region used for 24-hour forecasts.
 class ForecastRegion {

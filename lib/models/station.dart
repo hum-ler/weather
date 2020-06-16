@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/models/geoposition.dart';
+import 'geoposition.dart';
 
 /// A meteorological observing station.
 class Station {

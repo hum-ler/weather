@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/models/forecast_area.dart';
-import 'package:weather/models/forecast_region.dart';
-import 'package:weather/models/geoposition.dart';
-import 'package:weather/models/station.dart';
-import 'package:weather/utils/constants.dart' as constants;
-import 'package:weather/utils/utils.dart';
+import '../models/forecast_area.dart';
+import '../models/forecast_region.dart';
+import '../models/geoposition.dart';
+import '../models/station.dart';
+import '../utils/config.dart' as config;
+import '../utils/constants.dart' as constants;
+import '../utils/date_time_ext.dart';
+import '../utils/http_utils.dart';
+import '../utils/math_utils.dart';
 
 /// The weather service.
 class Weather {
@@ -49,7 +52,7 @@ class Weather {
 
     // Preform a fetch only if we are over the minimum period.
     if (_timestamp != null &&
-        _timestamp.difference(timestamp).abs() < constants.minFetchPeriod) {
+        _timestamp.difference(timestamp).abs() < config.minFetchPeriod) {
       return;
     }
 
@@ -538,8 +541,8 @@ class Weather {
       s.readingAnomaly = false;
       s.timestampAnomaly =
           s.airTemperatureTimestamp.difference(_timestamp).abs() >
-              constants.maxReadingRecency;
-      s.distanceAnomaly = s.distance > constants.maxDistance;
+              config.maxReadingRecency;
+      s.distanceAnomaly = s.distance > config.maxDistance;
     }
 
     return s;
@@ -549,8 +552,8 @@ class Weather {
     if (s != null) {
       s.readingAnomaly = false;
       s.timestampAnomaly = s.rainfallTimestamp.difference(_timestamp).abs() >
-          constants.maxReadingRecency;
-      s.distanceAnomaly = s.distance > constants.maxDistance;
+          config.maxReadingRecency;
+      s.distanceAnomaly = s.distance > config.maxDistance;
     }
 
     return s;
@@ -561,8 +564,8 @@ class Weather {
       s.readingAnomaly = false;
       s.timestampAnomaly =
           s.relativeHumidityTimestamp.difference(_timestamp).abs() >
-              constants.maxReadingRecency;
-      s.distanceAnomaly = s.distance > constants.maxDistance;
+              config.maxReadingRecency;
+      s.distanceAnomaly = s.distance > config.maxDistance;
     }
 
     return s;
@@ -572,8 +575,8 @@ class Weather {
     if (s != null) {
       s.readingAnomaly = false;
       s.timestampAnomaly = s.windSpeedTimestamp.difference(_timestamp).abs() >
-          constants.maxReadingRecency;
-      s.distanceAnomaly = s.distance > constants.maxDistance;
+          config.maxReadingRecency;
+      s.distanceAnomaly = s.distance > config.maxDistance;
     }
 
     return s;
@@ -583,8 +586,8 @@ class Weather {
     if (f != null) {
       f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
       f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
-          constants.maxReadingRecency;
-      f.distanceAnomaly = f.distance > constants.maxDistance;
+          config.maxReadingRecency;
+      f.distanceAnomaly = f.distance > config.maxDistance;
     }
 
     return f;
@@ -597,8 +600,8 @@ class Weather {
           f.overallForecast.isEmpty ||
           (f.forecasts.length != 3 && f.forecasts.length != 4);
       f.timestampAnomaly = f.timestamp.difference(_timestamp).abs() >
-          constants.max24HourForecastRecency;
-      f.distanceAnomaly = f.distance > constants.maxRegionDistance;
+          config.max24HourForecastRecency;
+      f.distanceAnomaly = f.distance > config.maxRegionDistance;
     }
 
     return f;

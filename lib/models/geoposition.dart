@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:weather/services/geolocation.dart';
+import '../services/geolocation.dart';
 
 /// The horizontal geographic coordinates of a point on the map.
 class Geoposition {

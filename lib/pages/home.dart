@@ -196,7 +196,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   );
                 },
                 body: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 20.0),
                   child: Column(
                     children: <Widget>[
                       if (_airTemperature != null)

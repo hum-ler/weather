@@ -13,6 +13,7 @@ import '../utils/config.dart' as config;
 import '../utils/date_time_ext.dart';
 import '../utils/math_utils.dart';
 import '../utils/string_ext.dart';
+import '../widgets/reversed_expansion_panel_list.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -92,6 +93,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     height: MediaQuery.of(context).size.height -
                         Scaffold.of(context).appBarMaxHeight -
                         // TODO: Get the height of details panel header.
+                        // May be impossible because it has not been built yet.
+                        // Value here is from Flutter Inspector.
                         56,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -164,8 +167,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               ),
             ),
           ),
-          // TODO: Fix the direction of the details panel arrow.
-          ExpansionPanelList(
+          ReversedExpansionPanelList(
             expansionCallback: (int index, bool isExpanded) {
               setState(() {
                 _detailsPanelIsExpanded = !isExpanded;

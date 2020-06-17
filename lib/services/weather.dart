@@ -60,20 +60,16 @@ class Weather {
     _forecastAreas = <String, NearestForecastArea>{};
     _forecastRegions = <String, NearestForecastRegion>{};
 
-    await _fetchAirTemperature(timestamp: timestamp);
-    await _fetchRainfall(timestamp: timestamp);
-    await _fetchRelativeHumidity(timestamp: timestamp);
-    await _fetchWindDirection(timestamp: timestamp);
-    await _fetchWindSpeed(timestamp: timestamp);
-
-    await _fetch2HourWeatherForecasts(
-      timestamp: timestamp,
-      url: constants.forecast2HourUrl,
-    );
-    await _fetch24HourWeatherForecasts(
-      timestamp: timestamp,
-      url: constants.forecast24HourUrl,
-    );
+    List<dynamic> resultsList = await Future.wait([
+      _fetchAirTemperature(timestamp: timestamp),
+      _fetchRainfall(timestamp: timestamp),
+      _fetchRelativeHumidity(timestamp: timestamp),
+      _fetchWindDirection(timestamp: timestamp),
+      _fetchWindSpeed(timestamp: timestamp),
+      _fetch2HourWeatherForecasts(timestamp: timestamp),
+      _fetch24HourWeatherForecasts(timestamp: timestamp),
+    ]);
+    _processFetchResults(resultsList);
 
     _timestamp = timestamp;
   }
@@ -199,29 +195,26 @@ class Weather {
   ///
   /// The data structure returned by the API is the same for the different
   /// reading types.
-  ///
-  /// Updates [_stations].
-  Future<void> _fetchRealtimeWeatherReadings({
+  Future<Map<String, NearestStation>> _fetchRealtimeWeatherReadings({
     @required DateTime timestamp,
     @required String url,
     @required WeatherReadingType type,
   }) async {
-    if (timestamp == null) return;
+    if (timestamp == null) return null;
 
     String fullUrl =
         '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return;
+    if (data == null) return null;
+
+    Map<String, NearestStation> stations = <String, NearestStation>{};
 
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the list of all stations from the metadata.
-      Map<String, NearestStation> potentialStations =
-          <String, NearestStation>{};
-
+      // Generate the collection of all stations from the metadata.
       (data['metadata']['stations'] as List).forEach((element) {
-        if (!potentialStations.containsKey(element['id'])) {
-          potentialStations[element['id']] = NearestStation(
+        if (!stations.containsKey(element['id'])) {
+          stations[element['id']] = NearestStation(
             id: element['id'],
             name: element['name'],
             geoposition: Geoposition(
@@ -235,18 +228,12 @@ class Weather {
       DateTime serverTimestamp =
           DateTime.tryParse(data['items'][0]['timestamp']);
 
+      // Fill in the readings.
       (data['items'][0]['readings'] as List).forEach((element) {
         NearestStation station;
-
-        // Look for an existing station in [_stations] first. Otherwise, copy
-        // over the new one from [potentialStations].
-        if (_stations.containsKey(element['station_id'])) {
-          station = _stations[element['station_id']];
-        } else if (potentialStations.containsKey(element['station_id'])) {
-          station = potentialStations[element['station_id']];
-          _stations[station.id] = station;
+        if (stations.containsKey(element['station_id'])) {
+          station = stations[element['station_id']];
         }
-
         if (station != null) {
           // The value may be returned with or without a decimal point, so a
           // conversion is needed.
@@ -283,9 +270,13 @@ class Weather {
         }
       });
     }
+
+    return stations;
   }
 
-  Future<void> _fetchAirTemperature({@required DateTime timestamp}) {
+  Future<Map<String, NearestStation>> _fetchAirTemperature({
+    @required DateTime timestamp,
+  }) {
     return _fetchRealtimeWeatherReadings(
       timestamp: timestamp,
       url: constants.airTemperatureUrl,
@@ -293,7 +284,9 @@ class Weather {
     );
   }
 
-  Future<void> _fetchRainfall({@required DateTime timestamp}) {
+  Future<Map<String, NearestStation>> _fetchRainfall({
+    @required DateTime timestamp,
+  }) {
     return _fetchRealtimeWeatherReadings(
       timestamp: timestamp,
       url: constants.rainfallUrl,
@@ -301,7 +294,9 @@ class Weather {
     );
   }
 
-  Future<void> _fetchRelativeHumidity({@required DateTime timestamp}) {
+  Future<Map<String, NearestStation>> _fetchRelativeHumidity({
+    @required DateTime timestamp,
+  }) {
     return _fetchRealtimeWeatherReadings(
       timestamp: timestamp,
       url: constants.relativeHumidityUrl,
@@ -309,14 +304,18 @@ class Weather {
     );
   }
 
-  Future<void> _fetchWindDirection({@required DateTime timestamp}) {
+  Future<Map<String, NearestStation>> _fetchWindDirection({
+    @required DateTime timestamp,
+  }) {
     return _fetchRealtimeWeatherReadings(
         timestamp: timestamp,
         url: constants.windDirectionUrl,
         type: WeatherReadingType.windDirection);
   }
 
-  Future<void> _fetchWindSpeed({@required DateTime timestamp}) {
+  Future<Map<String, NearestStation>> _fetchWindSpeed({
+    @required DateTime timestamp,
+  }) {
     return _fetchRealtimeWeatherReadings(
         timestamp: timestamp,
         url: constants.windSpeedUrl,
@@ -324,28 +323,25 @@ class Weather {
   }
 
   /// Fetches actual data using the 2-hour weather forecast API.
-  ///
-  /// Updates [_forecastAreas].
-  Future<void> _fetch2HourWeatherForecasts({
+  Future<Map<String, NearestForecastArea>> _fetch2HourWeatherForecasts({
     @required DateTime timestamp,
-    @required String url,
   }) async {
-    if (timestamp == null) return;
+    if (timestamp == null) return null;
 
     String fullUrl =
-        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '${constants.forecast2HourUrl}?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return;
+    if (data == null) return null;
+
+    Map<String, NearestForecastArea> forecastAreas =
+        <String, NearestForecastArea>{};
 
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the list of all areas from the metadata.
-      Map<String, NearestForecastArea> potentialForecastAreas =
-          <String, NearestForecastArea>{};
-
+      // Generate the collection of all areas from the metadata.
       (data['area_metadata'] as List).forEach((element) {
-        if (!potentialForecastAreas.containsKey(element['name'])) {
-          potentialForecastAreas[element['name']] = NearestForecastArea(
+        if (!forecastAreas.containsKey(element['name'])) {
+          forecastAreas[element['name']] = NearestForecastArea(
             id: element['name'],
             name: element['name'],
             geoposition: Geoposition(
@@ -359,14 +355,12 @@ class Weather {
       DateTime serverTimestamp =
           DateTime.tryParse(data['items'][0]['timestamp']);
 
+      // Fill in the forecasts.
       (data['items'][0]['forecasts'] as List).forEach((element) {
         NearestForecastArea forecastArea;
-
-        if (potentialForecastAreas.containsKey(element['area'])) {
-          forecastArea = potentialForecastAreas[element['area']];
-          _forecastAreas[forecastArea.id] = forecastArea;
+        if (forecastAreas.containsKey(element['area'])) {
+          forecastArea = forecastAreas[element['area']];
         }
-
         if (forecastArea != null) {
           forecastArea.forecast = element['forecast'];
           forecastArea.forecastTimestamp = serverTimestamp;
@@ -374,22 +368,21 @@ class Weather {
         }
       });
     }
+
+    return forecastAreas;
   }
 
   /// Fetches actual data using the 24-hour weather forecast API.
-  ///
-  /// Updates [_forecastRegions].
-  Future<void> _fetch24HourWeatherForecasts({
+  Future<Map<String, NearestForecastRegion>> _fetch24HourWeatherForecasts({
     @required DateTime timestamp,
-    @required String url,
   }) async {
-    if (timestamp == null) return;
+    if (timestamp == null) return null;
 
     String fullUrl =
-        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '${constants.forecast24HourUrl}?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return;
+    if (data == null) return null;
 
     List<String> supportedRegions = <String>[
       'central',
@@ -398,6 +391,9 @@ class Weather {
       'south',
       'west',
     ];
+
+    Map<String, NearestForecastRegion> forecastRegions =
+        <String, NearestForecastRegion>{};
 
     if (data['api_info']['status'] == 'healthy') {
       // Gather the common details across regions.
@@ -421,7 +417,7 @@ class Weather {
 
       // Prepare a fresh object for each region and fill in the common details.
       supportedRegions.forEach((element) {
-        _forecastRegions[element] = NearestForecastRegion(
+        forecastRegions[element] = NearestForecastRegion(
           id: element,
           name: element,
           geoposition: _getPositionFromRegionName(element),
@@ -437,6 +433,7 @@ class Weather {
         );
       });
 
+      // Fill in the forecast for each chunk.
       (data['items'][0]['periods'] as List).asMap().forEach((index, element) {
         DateTime forecastChunkStartTime =
             DateTime.parse(element['time']['start']);
@@ -462,19 +459,19 @@ class Weather {
 
         if (forecastChunk != null) {
           supportedRegions.forEach((region) {
-            _forecastRegions[region].forecasts ??= <ForecastChunk, String>{};
+            forecastRegions[region].forecasts ??= <ForecastChunk, String>{};
 
-            _forecastRegions[region].forecasts[forecastChunk] =
+            forecastRegions[region].forecasts[forecastChunk] =
                 element['regions'][region];
 
             if (index == 0) {
-              _forecastRegions[region]
+              forecastRegions[region]
                 ..firstForecastChunk = forecastChunk
                 ..firstForecastChunkStartTime = forecastChunkStartTime;
 
               switch (forecastChunk) {
                 case ForecastChunk.predawn:
-                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                  forecastRegions[region].forecastOrder = <ForecastChunk>[
                     ForecastChunk.predawn,
                     ForecastChunk.morning,
                     ForecastChunk.afternoon,
@@ -483,7 +480,7 @@ class Weather {
                   break;
 
                 case ForecastChunk.morning:
-                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                  forecastRegions[region].forecastOrder = <ForecastChunk>[
                     ForecastChunk.morning,
                     ForecastChunk.afternoon,
                     ForecastChunk.night,
@@ -491,7 +488,7 @@ class Weather {
                   break;
 
                 case ForecastChunk.afternoon:
-                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                  forecastRegions[region].forecastOrder = <ForecastChunk>[
                     ForecastChunk.afternoon,
                     ForecastChunk.night,
                     ForecastChunk.morning,
@@ -499,7 +496,7 @@ class Weather {
                   break;
 
                 case ForecastChunk.night:
-                  _forecastRegions[region].forecastOrder = <ForecastChunk>[
+                  forecastRegions[region].forecastOrder = <ForecastChunk>[
                     ForecastChunk.night,
                     ForecastChunk.morning,
                     ForecastChunk.afternoon,
@@ -511,6 +508,8 @@ class Weather {
         }
       });
     }
+
+    return forecastRegions;
   }
 
   /// Gets the reference [Geoposition] for the region with [regionName].
@@ -605,6 +604,44 @@ class Weather {
     }
 
     return f;
+  }
+
+  /// Handles the results coming from parallel API calls.
+  ///
+  /// Modifies [_stations], [_forecastAreas] and [_forecastRegions] directly.
+  ///
+  /// See [fetchReadings()] (specifically the call to [Future.wait()]) to find
+  /// out the order of the results.
+  void _processFetchResults(List<dynamic> resultsList) {
+    resultsList.asMap().forEach((index, element) {
+      // Handle readings.
+      if (index < 5) {
+        if (element != null && element is Map<String, NearestStation>) {
+          // Merge all the stations together.
+          element.forEach((key, value) {
+            if (_stations.containsKey(key)) {
+              _stations[key].merge(value);
+            } else {
+              _stations[key] = value;
+            }
+          });
+        }
+      }
+
+      // Handle 2-hour forecasts.
+      if (index == 5) {
+        if (element != null && element is Map<String, NearestForecastArea>) {
+          _forecastAreas = element;
+        }
+      }
+
+      // Handle 24-hour forecasts.
+      if (index == 6) {
+        if (element != null && element is Map<String, NearestForecastRegion>) {
+          _forecastRegions = element;
+        }
+      }
+    });
   }
 }
 

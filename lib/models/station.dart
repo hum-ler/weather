@@ -162,4 +162,38 @@ class NearestStation extends Station {
 
     return s;
   }
+
+  /// Merges the fields from [other] into this [NearestStation].
+  ///
+  /// Fields to be merged must be null in this object i.e. the operation will
+  /// not overwrite an existing value.
+  void merge(NearestStation other) {
+    if (other == null) return;
+
+    airTemperature ??= other.airTemperature;
+    airTemperatureTimestamp ??= other.airTemperatureTimestamp;
+    airTemperatureUnit ??= other.airTemperatureUnit;
+    distance ??= other.distance;
+    distanceAnomaly ??= other.distanceAnomaly;
+    distanceUnit ??= other.distanceUnit;
+    geoposition ??= other.geoposition;
+    id ??= other.id;
+    name ??= other.name;
+    rainfall ??= other.rainfall;
+    rainfallTimestamp ??= other.rainfallTimestamp;
+    rainfallUnit ??= other.rainfallUnit;
+    readingAnomaly ??= other.readingAnomaly;
+    relativeHumidity ??= other.relativeHumidity;
+    relativeHumidityTimestamp ??= other.relativeHumidityTimestamp;
+    relativeHumidityUnit ??= other.relativeHumidityUnit;
+    timestamp ??= other.timestamp;
+    timestampAnomaly ??= other.timestampAnomaly;
+    userLocation ??= other.userLocation;
+    windDirection ??= other.windDirection;
+    windDirectionTimestamp ??= other.windDirectionTimestamp;
+    windDirectionUnit ??= other.windDirectionUnit;
+    windSpeed ??= other.windSpeed;
+    windSpeedTimestamp ??= other.windSpeedTimestamp;
+    windSpeedUnit ??= other.windSpeedUnit;
+  }
 }

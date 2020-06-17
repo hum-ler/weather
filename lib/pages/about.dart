@@ -6,6 +6,12 @@ import 'package:url_launcher/url_launcher.dart';
 class About extends StatelessWidget {
   final String _title = 'Weather · Right Here · Right Now · 0.1';
   final String _data = r'''
+## Usage
+
+Pull to refresh data (capped at once every 15 minutes).
+
+Tab the bottom panel to reveal more details.
+
 ## Credits
 
 [Data.gov.sg](https://data.gov.sg/) datasets licensed under [Singapore Open Data License](https://data.gov.sg/open-data-licence). Access via API is subject to [API Terms of Service](https://data.gov.sg/privacy-and-website-terms#api-terms).

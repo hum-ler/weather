@@ -1,20 +1,5 @@
 import '../models/geoposition.dart';
 
-/// The mean Earth radius in km.
-///
-/// See https://en.wikipedia.org/wiki/Earth_radius.
-const double meanEarthRadius = 6371.0088;
-
-/// The equatorial radius in km.
-///
-/// See https://en.wikipedia.org/wiki/Earth_radius.
-const double equatorialRadius = 6378.137;
-
-/// The conversion factor from knot to m/s.
-///
-/// See https://en.wikipedia.org/wiki/Knot_(unit).
-const double knotToMetersPerSecond = 0.514444;
-
 /// The URL of realtime air temperature readings API (at Data.gov.sg).
 ///
 /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is °C.

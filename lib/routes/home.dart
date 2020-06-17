@@ -6,7 +6,7 @@ import '../models/forecast_area.dart';
 import '../models/forecast_region.dart';
 import '../models/geoposition.dart';
 import '../models/station.dart';
-import '../pages/about.dart';
+import '../routes/about.dart';
 import '../services/geolocation.dart';
 import '../services/weather.dart';
 import '../utils/config.dart' as config;

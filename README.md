@@ -6,7 +6,7 @@ Weather · Right Here · Right Now
 
 Pull to refresh data (capped at once every 15 minutes).
 
-Tab the bottom panel to reveal more details.
+Tap the bottom panel to reveal weather details.
 
 ## Credits
 

@@ -196,6 +196,12 @@ class Weather {
       return (data['items'][0]['readings'] as List).map((e) {
         dynamic s = stations.firstWhere((s) => s['id'] == e['station_id']);
 
+        // Perform conversion if necessary.
+        num value = e['value'];
+        if (type == ReadingType.windSpeed) {
+          value = _knotsToMetersPerSecond(value);
+        }
+
         return Reading(
           type: type,
           creation: creation,
@@ -208,7 +214,7 @@ class Weather {
             ),
           ),
           userLocation: userLocation,
-          value: e['value'],
+          value: value,
         );
       });
     }
@@ -412,6 +418,16 @@ class Weather {
       }
     }
   }
+
+  /// Converts from knots to meters per second.
+  num _knotsToMetersPerSecond(num knots) {
+    return knots * _knotToMetersPerSecond;
+  }
+
+  /// The conversion factor from knot to m/s.
+  ///
+  /// See https://en.wikipedia.org/wiki/Knot_(unit).
+  static const double _knotToMetersPerSecond = 0.514444;
 
   /// The URL of realtime air temperature readings API (at Data.gov.sg).
   ///

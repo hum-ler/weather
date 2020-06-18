@@ -39,6 +39,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// The nearest wind direction reading.
   Reading _windDirection;
 
+  /// The nearest PM2.5 reading.
+  Reading _pm2_5;
+
   /// The nearest weather condition.
   Condition _condition;
 
@@ -423,6 +426,45 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                             ),
                           ],
                         ),
+                      if (_pm2_5 != null)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            _BoxedIcon(
+                              icon: Icons.grain,
+                              size: smallIconSize,
+                              color: _pm2_5.isInBounds ? null : errorColor,
+                            ),
+                            Text(
+                              '${_pm2_5.value.toString()}${_pm2_5.unit}',
+                              style: _pm2_5.isInBounds
+                                  ? smallTextStyle
+                                  : smallTextStyle.copyWith(color: errorColor),
+                            ),
+                            SizedBox(width: 4.0),
+                            _BoxedIcon(
+                              icon: Icons.place,
+                              color: _pm2_5.isNearby ? null : errorColor,
+                            ),
+                            Text(
+                              '${_pm2_5.provider.name.capitalize()} (${_pm2_5.distance.toStringAsFixed(1)}${_pm2_5.distanceUnit})',
+                              style: _pm2_5.isNearby
+                                  ? smallTextStyle
+                                  : smallTextStyle.copyWith(color: errorColor),
+                            ),
+                            SizedBox(width: 4.0),
+                            _BoxedIcon(
+                              icon: Icons.schedule,
+                              color: _pm2_5.isExpired ? errorColor : null,
+                            ),
+                            Text(
+                              _pm2_5.creation.format(dateTimePattern),
+                              style: _pm2_5.isExpired
+                                  ? smallTextStyle.copyWith(color: errorColor)
+                                  : smallTextStyle,
+                            ),
+                          ],
+                        ),
                       if (_condition != null)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -539,6 +581,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       _humidity = Weather().getNearestHumidityReading();
       _windSpeed = Weather().getNearestWindSpeedReading();
       _windDirection = Weather().getNearestWindDirectionReading();
+      _pm2_5 = Weather().getNearestPM2_5Reading();
       _condition = Weather().getNearestCondition();
       _forecasts = Weather().getNearest24HourForecast();
     });

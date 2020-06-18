@@ -42,6 +42,9 @@ class Weather {
   /// from [_windSpeedReading].
   List<Reading> _windDirectionReadings = [];
 
+  /// The collection of PM2.5 readings.
+  List<Reading> _pm2_5Readings = [];
+
   /// The collection of 2-hour forecasts.
   List<Forecast> _x2HourForecasts = [];
 
@@ -105,6 +108,10 @@ class Weather {
         type: ReadingType.windDirection,
         userLocation: userLocation,
       ),
+      _fetchPM2_5Readings(
+        timestamp: timestamp,
+        userLocation: userLocation,
+      ),
       _fetch2HourForecasts(
         timestamp: timestamp,
         userLocation: userLocation,
@@ -165,6 +172,15 @@ class Weather {
         .reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
+  /// Gets the nearest PM2.5 reading.
+  ///
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestPM2_5Reading() {
+    if (_pm2_5Readings.isEmpty) return null;
+
+    return _pm2_5Readings.reduce((v, e) => v.distance < e.distance ? v : e);
+  }
+
   /// Gets the nearest weather condition.
   ///
   /// We are using the 2-hour forecast to approximate the current condition.
@@ -203,6 +219,9 @@ class Weather {
     @required ReadingType type,
     @required Geoposition userLocation,
   }) async {
+    // This method is not meant for PM2.5 readings, which is a different API.
+    if (type == ReadingType.pm2_5) return null;
+
     if (timestamp == null) return null;
 
     // Perform a fetch only if we are over the validity period.
@@ -246,6 +265,57 @@ class Weather {
           ),
           userLocation: userLocation,
           value: value,
+        );
+      });
+    }
+
+    return null;
+  }
+
+  /// Fetches actual data using the PM2.5 API.
+  Future<Iterable<Reading>> _fetchPM2_5Readings({
+    @required DateTime timestamp,
+    @required Geoposition userLocation,
+  }) async {
+    if (timestamp == null) return null;
+
+    // Perform a fetch only if we are over the validity period.
+    if (_readingTypeExpiry[ReadingType.pm2_5] != null &&
+        timestamp.isBefore(_readingTypeExpiry[ReadingType.pm2_5])) {
+      return null;
+    }
+
+    String fullUrl =
+        '$_pm2_5Url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+
+    dynamic data = await httpGetJsonData(fullUrl);
+    if (data == null) return null;
+
+    if (data['api_info']['status'] == 'healthy') {
+      // Server-side timestamp.
+      DateTime creation =
+          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+
+      List<dynamic> regions = data['region_metadata'];
+      dynamic readings = data['items'][0]['readings']['pm25_one_hourly'];
+
+      // Cycle through the 5 known regions.
+      return ['central', 'north', 'east', 'south', 'west'].map((e) {
+        dynamic region = regions.firstWhere((r) => r['name'] == e);
+
+        return Reading(
+          type: ReadingType.pm2_5,
+          creation: creation,
+          provider: Provider.station(
+            id: region['name'],
+            name: region['name'],
+            location: Geoposition(
+              latitude: region['label_location']['latitude'],
+              longitude: region['label_location']['longitude'],
+            ),
+          ),
+          userLocation: userLocation,
+          value: readings[e],
         );
       });
     }
@@ -438,9 +508,18 @@ class Weather {
       }
     }
 
+    // Handle PM2.5 readings.
+    if (resultsList[5] != null && resultsList[5] is Iterable<Reading>) {
+      _pm2_5Readings = resultsList[5].toList();
+
+      if (_pm2_5Readings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.pm2_5] = _pm2_5Readings.first.expiry;
+      }
+    }
+
     // Handle 2-hour forecasts.
-    if (resultsList[5] != null && resultsList[5] is Iterable<Forecast>) {
-      _x2HourForecasts = resultsList[5].toList();
+    if (resultsList[6] != null && resultsList[6] is Iterable<Forecast>) {
+      _x2HourForecasts = resultsList[6].toList();
 
       if (_x2HourForecasts.isNotEmpty) {
         _x2HourForecastExpiry = _x2HourForecasts.first.expiry;
@@ -448,8 +527,8 @@ class Weather {
     }
 
     // Handle 24-hour forecasts.
-    if (resultsList[6] != null && resultsList[6] is Iterable<List<Forecast>>) {
-      _x24HourForecasts = resultsList[6].toList();
+    if (resultsList[7] != null && resultsList[7] is Iterable<List<Forecast>>) {
+      _x24HourForecasts = resultsList[7].toList();
 
       if (_x24HourForecasts.isNotEmpty) {
         _x24HourForecastExpiry = _x24HourForecasts.first.first.expiry;
@@ -506,6 +585,13 @@ class Weather {
   /// See https://data.gov.sg/dataset/realtime-weather-readings.
   static const String _windDirectionUrl =
       'https://api.data.gov.sg/v1/environment/wind-direction';
+
+  /// The URL of the PM2.5 API (at Data.gov.sg).
+  ///
+  /// Takes parameter date_time=<ISO8601>.
+  ///
+  /// See https://data.gov.sg/dataset/pm2-5.
+  static const String _pm2_5Url = 'https://api.data.gov.sg/v1/environment/pm25';
 
   /// The URL of the 2-hour weather forecast API (at Data.gov.sg).
   ///

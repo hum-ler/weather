@@ -32,6 +32,9 @@ class Condition {
   /// The distance of the user from the provider.
   final double distance;
 
+  /// The unit for [distance].
+  String get distanceUnit => 'km';
+
   /// Indicates whether [distance] is within reasonable range.
   bool get isNearby => distance <= provider.effectiveRange;
 

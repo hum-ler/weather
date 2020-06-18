@@ -8,7 +8,7 @@ class About extends StatelessWidget {
   final String _data = r'''
 ## Usage
 
-Pull to refresh data (capped at once every 15 minutes).
+Pull to refresh data.
 
 Tap the bottom panel to reveal weather details.
 

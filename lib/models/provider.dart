@@ -69,7 +69,7 @@ class Provider {
 
   /// The effective range for each [ProviderType].
   static const Map<ProviderType, double> _effectiveRange = {
-    ProviderType.station: 5.0,
+    ProviderType.station: 10.0,
     ProviderType.area: 10.0,
     ProviderType.region: 20.0,
   };

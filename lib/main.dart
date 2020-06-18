@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'routes/home.dart';
-import 'utils/config.dart' as config;
+import 'themes/styles.dart';
 
 void main() {
   runApp(MaterialApp(
     home: Home(),
-    theme: config.lightTheme,
-    darkTheme: config.darkTheme,
+    theme: lightTheme,
+    darkTheme: darkTheme,
   ));
 }

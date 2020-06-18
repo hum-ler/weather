@@ -15,6 +15,9 @@ class Reading {
   /// The numerical value of this reading.
   final num value;
 
+  /// The unit of this reading.
+  String get unit => _units[type];
+
   /// The provider of this reading.
   final Provider provider;
 
@@ -22,16 +25,16 @@ class Reading {
   final Geoposition userLocation;
 
   /// The maximum (reasonable) value for this reading type.
-  num get upperBound => _upperBound[type];
+  num get upperBound => _upperBounds[type];
 
   /// The minimum (reasonable) value for this reading type.
-  num get lowerBound => _lowerBound[type];
+  num get lowerBound => _lowerBounds[type];
 
   /// Indicates whether the value is within reasonable boundaries.
   bool get isInBounds => lowerBound <= value && upperBound >= value;
 
   /// The validity period for this reading type.
-  Duration get validityPeriod => _validityPeriod[type];
+  Duration get validityPeriod => _validityPeriods[type];
 
   /// The expiry time of this reading.
   final DateTime expiry;
@@ -41,6 +44,9 @@ class Reading {
 
   /// The distance of the user from the provider.
   final double distance;
+
+  /// The unit for [distance].
+  String get distanceUnit => 'km';
 
   /// Indicates whether [distance] is within reasonable range.
   bool get isNearby => distance <= provider.effectiveRange;
@@ -59,37 +65,47 @@ class Reading {
         assert(value != null),
         assert(provider != null),
         assert(userLocation != null),
-        expiry = creation.add(_validityPeriod[type]),
+        expiry = creation.add(_validityPeriods[type]),
         distance = userLocation.distanceFrom(provider.location);
 
-  /// The validaty period for each [ReadingType].
-  static const Map<ReadingType, Duration> _validityPeriod = {
-    ReadingType.temperature: const Duration(minutes: 1),
-    ReadingType.rainfall: const Duration(minutes: 5),
-    ReadingType.humidity: const Duration(minutes: 1),
-    ReadingType.windSpeed: const Duration(minutes: 1),
-    ReadingType.windDirection: const Duration(minutes: 1),
-    ReadingType.pm2_5: const Duration(hours: 1),
+  /// The validaty periods for each [ReadingType].
+  static const Map<ReadingType, Duration> _validityPeriods = {
+    ReadingType.temperature: const Duration(minutes: 10),
+    ReadingType.rainfall: const Duration(minutes: 20),
+    ReadingType.humidity: const Duration(minutes: 10),
+    ReadingType.windSpeed: const Duration(minutes: 10),
+    ReadingType.windDirection: const Duration(minutes: 10),
+    ReadingType.pm2_5: const Duration(hours: 2),
   };
 
-  /// The minimum (reasonable) value for each [ReadingType].
-  static const Map<ReadingType, num> _lowerBound = {
-    ReadingType.temperature: 20.0,
+  /// The minimum (reasonable) values for each [ReadingType].
+  static const Map<ReadingType, num> _lowerBounds = {
+    ReadingType.temperature: 19.0,
     ReadingType.rainfall: 0.0,
-    ReadingType.humidity: 0.0,
+    ReadingType.humidity: 30.0,
     ReadingType.windSpeed: 0.0,
     ReadingType.windDirection: 0,
     ReadingType.pm2_5: 0,
   };
 
-  /// The maximum (reasonable) value for each [ReadingType].
-  static const Map<ReadingType, num> _upperBound = {
-    ReadingType.temperature: 40.0,
-    ReadingType.rainfall: 100.0,
+  /// The maximum (reasonable) values for each [ReadingType].
+  static const Map<ReadingType, num> _upperBounds = {
+    ReadingType.temperature: 37.0,
+    ReadingType.rainfall: 96.0,
     ReadingType.humidity: 100.0,
-    ReadingType.windSpeed: 100.0,
+    ReadingType.windSpeed: 25.2,
     ReadingType.windDirection: 360,
-    ReadingType.pm2_5: 300,
+    ReadingType.pm2_5: 471,
+  };
+
+  /// The units for each [ReadingType].
+  static const Map<ReadingType, String> _units = {
+    ReadingType.temperature: '°C',
+    ReadingType.rainfall: 'mm',
+    ReadingType.humidity: '%',
+    ReadingType.windSpeed: 'm/s',
+    ReadingType.windDirection: '°',
+    ReadingType.pm2_5: 'µg/m³',
   };
 }
 

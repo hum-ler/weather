@@ -1,21 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// The minimum period between consecutive data fetches.
-const Duration minFetchPeriod = Duration(minutes: 15);
-
-/// The maximum period for a reading to be considered realtime.
-const Duration maxReadingRecency = Duration(minutes: 45);
-
-/// The maximum period for a 24-hour forecast to be considered up-to-date.
-const Duration max24HourForecastRecency = Duration(hours: 6);
-
-/// The maximum distance in km for a station or forecast area to be considered
-/// near.
-const double maxDistance = 10.0;
-
-/// The maximum distance in km for a forecast region to be considered near.
-const double maxRegionDistance = 20.0;
-
 /// The style for small-size text.
 const TextStyle smallTextStyle = TextStyle(
   fontSize: 12.0,
@@ -35,8 +19,8 @@ const TextStyle largeTextStyle = TextStyle(
 /// The maximum length of a weather condition in the display.
 const int maxConditionLength = 24;
 
-/// The maximum length of a station or forecast area name in the display.
-const int maxStationAreaNameLength = 18;
+/// The maximum length of a provider name in the display.
+const int maxProviderNameLength = 18;
 
 /// The size of small icons.
 const double smallIconSize = 10.0;
@@ -47,10 +31,13 @@ const double mediumIconSize = 48.0;
 /// The size of large icons.
 const double largeIconSize = 100.0;
 
-/// The color to use to highlight anomalies.
+/// The color to use to highlight error values.
+const Color errorColor = Colors.red;
+
+/// The color to use to highlight out-of-date values.
 ///
-/// Used inside [Icon]s and [Text]s.
-const Color anomalyHighlight = Colors.red;
+/// Used for main display items outside the details panel.
+final Color outOfDateColor = Colors.grey;
 
 /// The pattern for displaying [DateTime]s to the user.
 const String dateTimePattern = 'd MMM H:mm';

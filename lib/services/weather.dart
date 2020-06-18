@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../models/forecast_area.dart';
-import '../models/forecast_region.dart';
+import '../models/condition.dart';
+import '../models/forecast.dart';
 import '../models/geoposition.dart';
-import '../models/station.dart';
-import '../utils/config.dart' as config;
-import '../utils/constants.dart' as constants;
+import '../models/provider.dart';
+import '../models/reading.dart';
 import '../utils/date_time_ext.dart';
 import '../utils/http_utils.dart';
-import '../utils/math_utils.dart';
 
 /// The weather service.
 class Weather {
@@ -19,188 +17,168 @@ class Weather {
 
   factory Weather() => _singleton;
 
-  /// The collection of [NearestStation]s.
-  ///
-  /// Uses [Station.id] as the key.
-  ///
-  /// Using type [NearestStation] instead of [Station] as a convenience
-  /// for findNearest... methods.
-  Map<String, NearestStation> _stations;
+  List<Reading> _temperatureReadings = [];
 
-  /// The collection of [NearestForecastArea]s.
-  ///
-  /// Uses [ForecastArea.id] as the key.
-  ///
-  /// Using type [NearestForecastArea] instead of [ForecastArea] as a
-  /// convenience for [findNearest2HourForecast()].
-  Map<String, NearestForecastArea> _forecastAreas;
+  List<Reading> _rainfallReadings = [];
 
-  /// The collection of [NearestForecastRegion]s.
-  ///
-  /// Uses [ForecastRegion.id] as the key.
-  ///
-  /// Using type [NearestForecastRegion] instead of [ForecastRegion] as a
-  /// convenience for [findNearest24HourForecast()].
-  Map<String, NearestForecastRegion> _forecastRegions;
+  List<Reading> _humidityReadings = [];
 
-  /// The time when [fetchReadings()] is last called.
-  DateTime _timestamp;
+  List<Reading> _windSpeedReadings = [];
 
-  /// Retrieves all the [Station]s and their corresponding readings.
-  Future<void> fetchReadings({DateTime timestamp}) async {
+  List<Reading> _windDirectionReadings = [];
+
+  List<Forecast> _x2HourForecasts = [];
+
+  List<List<Forecast>> _x24HourForecasts = [];
+
+  /// The collection of [Reading.expiry] for each nearest [ReadingType].
+  ///
+  /// Used by [_fetchReadingsOfType()] to determine whether to fetch fresh data.
+  Map<ReadingType, DateTime> _readingTypeExpiry = {};
+
+  DateTime _x2HourForecastExpiry;
+
+  DateTime _x24HourForecastExpiry;
+
+  /// Retrieve readings and forecasts.
+  ///
+  /// Call this before calling any getNearest... methods,
+  /// [getNearestCondition()] or [getNearest24HourForecasts()].
+  Future<void> fetchReadings({
+    DateTime timestamp,
+    @required Geoposition userLocation,
+  }) async {
     timestamp ??= DateTime.now();
 
-    // Preform a fetch only if we are over the minimum period.
-    if (_timestamp != null &&
-        _timestamp.difference(timestamp).abs() < config.minFetchPeriod) {
-      return;
-    }
-
-    _stations = <String, NearestStation>{};
-    _forecastAreas = <String, NearestForecastArea>{};
-    _forecastRegions = <String, NearestForecastRegion>{};
-
     List<dynamic> resultsList = await Future.wait([
-      _fetchAirTemperature(timestamp: timestamp),
-      _fetchRainfall(timestamp: timestamp),
-      _fetchRelativeHumidity(timestamp: timestamp),
-      _fetchWindDirection(timestamp: timestamp),
-      _fetchWindSpeed(timestamp: timestamp),
-      _fetch2HourWeatherForecasts(timestamp: timestamp),
-      _fetch24HourWeatherForecasts(timestamp: timestamp),
+      _fetchReadingsOfType(
+        timestamp: timestamp,
+        url: _temperatureUrl,
+        type: ReadingType.temperature,
+        userLocation: userLocation,
+      ),
+      _fetchReadingsOfType(
+        timestamp: timestamp,
+        url: _rainfallUrl,
+        type: ReadingType.rainfall,
+        userLocation: userLocation,
+      ),
+      _fetchReadingsOfType(
+        timestamp: timestamp,
+        url: _humidityUrl,
+        type: ReadingType.humidity,
+        userLocation: userLocation,
+      ),
+      _fetchReadingsOfType(
+        timestamp: timestamp,
+        url: _windSpeedUrl,
+        type: ReadingType.windSpeed,
+        userLocation: userLocation,
+      ),
+      _fetchReadingsOfType(
+        timestamp: timestamp,
+        url: _windDirectionUrl,
+        type: ReadingType.windDirection,
+        userLocation: userLocation,
+      ),
+      _fetch2HourForecasts(
+        timestamp: timestamp,
+        userLocation: userLocation,
+      ),
+      _fetch24HourForecasts(
+        timestamp: timestamp,
+        userLocation: userLocation,
+      ),
     ]);
-    _processFetchResults(resultsList);
 
-    _timestamp = timestamp;
+    _collectFetchResults(resultsList);
   }
 
-  /// Gets the nearest station with air temperature reading.
+  /// Gets the nearest temperature reading.
   ///
-  /// Call [fetchReadings()] before this.
-  NearestStation nearestAirTemperature(Geoposition geoposition) {
-    NearestStation s = _deduceNearestStation(
-      geoposition,
-      WeatherReadingType.airTemperature,
-    );
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestTemperatureReading() {
+    if (_temperatureReadings.isEmpty) return null;
 
-    return _updateAirTemperatureAnomalies(NearestStation.from(s));
+    return _temperatureReadings
+        .reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
-  /// Gets the nearest station with rainfall reading.
+  /// Gets the nearest rainfall reading.
   ///
-  /// Call [fetchReadings()] before this.
-  NearestStation nearestRainfall(Geoposition geoposition) {
-    NearestStation s = _deduceNearestStation(
-      geoposition,
-      WeatherReadingType.rainfall,
-    );
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestRainfallReading() {
+    if (_rainfallReadings.isEmpty) return null;
 
-    return _updateRainfallAnomalies(NearestStation.from(s));
+    return _rainfallReadings.reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
-  /// Gets the nearest station with relative humidity reading.
+  /// Gets the nearest relative humidity reading.
   ///
-  /// Call [fetchReadings()] before this.
-  NearestStation nearestRelativeHumidity(Geoposition geoposition) {
-    NearestStation s = _deduceNearestStation(
-      geoposition,
-      WeatherReadingType.relativeHumidity,
-    );
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestHumidityReading() {
+    if (_humidityReadings.isEmpty) return null;
 
-    return _updateRelativeHumidityAnomalies(NearestStation.from(s));
+    return _humidityReadings.reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
-  /// Gets the nearest station with wind direction / wind speed readings.
+  /// Gets the nearest wind speed reading.
   ///
-  /// Call [fetchReadings()] before this.
-  NearestStation nearestWindDirectionWindSpeed(Geoposition geoposition) {
-    NearestStation s = _deduceNearestStation(
-      geoposition,
-      WeatherReadingType.windSpeed,
-    );
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestWindSpeedReading() {
+    if (_windSpeedReadings.isEmpty) return null;
 
-    return _updateWindDirectionWindSpeedAnomalies(NearestStation.from(s));
+    return _windSpeedReadings.reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
-  /// Gets the nearest forecast area with forecast data.
+  /// Gets the nearest wind direction reading.
   ///
-  /// Call [fetchReadings()] before this.
-  NearestForecastArea nearest2HourForecast(Geoposition geoposition) {
-    NearestForecastArea f =
-        _forecastAreas.values.where((e) => e.forecast != null).map((e) {
-      e.userLocation = geoposition;
-      e.distance = e.geoposition.distanceFrom(geoposition);
-      return e;
-    }).reduce((v, e) => v.distance < e.distance ? v : e);
+  /// Call [fetchReadings()] before calling this method.
+  Reading getNearestWindDirectionReading() {
+    if (_windDirectionReadings.isEmpty) return null;
 
-    return _update2HourForecastAnomalies(f);
+    return _windDirectionReadings
+        .reduce((v, e) => v.distance < e.distance ? v : e);
   }
 
-  NearestForecastRegion nearest24HourForecast(Geoposition geoposition) {
-    NearestForecastRegion f = _forecastRegions.values
-        .where((e) => e.overallForecast != null)
-        .map((e) {
-      e.userLocation = geoposition;
-      e.distance = e.geoposition.distanceFrom(geoposition);
-      return e;
-    }).reduce((v, e) => v.distance < e.distance ? v : e);
-
-    return _update24HourForecastAnomalies(f);
-  }
-
-  /// Picks the nearest station out of [_stations] for reading [type].
+  /// Gets the nearest weather condition.
   ///
-  /// Updates [NearestStation.userLocation] and [NearestStation.distance]
-  /// in the element as a side-effect.
-  NearestStation _deduceNearestStation(
-    Geoposition geoposition,
-    WeatherReadingType type,
-  ) {
-    if (geoposition == null) return null;
+  /// Call [fetchReadings()] before calling this method.
+  Condition getNearestCondition() {
+    if (_x2HourForecasts.isEmpty) return null;
 
-    Iterable<NearestStation> relevantStations;
+    return _x2HourForecasts.reduce((v, e) => v.distance < e.distance ? v : e);
+  }
 
-    switch (type) {
-      case WeatherReadingType.airTemperature:
-        relevantStations =
-            _stations.values.where((e) => e.airTemperature != null);
-        break;
+  /// Gets the nearest 24-hour forecast.
+  ///
+  /// Call [fetchReadings()] before calling this method.
+  ///
+  /// The items in the returned list are arranged in chronological order.
+  List<Forecast> getNearest24HourForecast() {
+    if (_x24HourForecasts.isEmpty) return null;
 
-      case WeatherReadingType.rainfall:
-        relevantStations = _stations.values.where((e) => e.rainfall != null);
-        break;
-
-      case WeatherReadingType.relativeHumidity:
-        relevantStations =
-            _stations.values.where((e) => e.relativeHumidity != null);
-        break;
-
-      case WeatherReadingType.windDirection:
-      case WeatherReadingType.windSpeed:
-        relevantStations = _stations.values
-            .where((e) => e.windDirection != null && e.windSpeed != null);
-        break;
-    }
-
-    if (relevantStations.length == 0) return null;
-
-    return relevantStations.map((e) {
-      e.userLocation = geoposition;
-      e.distance = e.geoposition.distanceFrom(geoposition);
-      return e;
-    }).reduce((v, e) => v.distance < e.distance ? v : e);
+    return _x24HourForecasts
+        .reduce((v, e) => v.first.distance < e.first.distance ? v : e);
   }
 
   /// Fetches actual data using the realtime weather readings API.
   ///
   /// The data structure returned by the API is the same for the different
   /// reading types.
-  Future<Map<String, NearestStation>> _fetchRealtimeWeatherReadings({
+  Future<Iterable<Reading>> _fetchReadingsOfType({
     @required DateTime timestamp,
     @required String url,
-    @required WeatherReadingType type,
+    @required ReadingType type,
+    @required Geoposition userLocation,
   }) async {
     if (timestamp == null) return null;
+
+    // Perform a fetch only if we are over the validity period.
+    if (_readingTypeExpiry[type] != null &&
+        timestamp.isBefore(_readingTypeExpiry[type])) {
+      return null;
+    }
 
     String fullUrl =
         '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
@@ -208,447 +186,286 @@ class Weather {
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
 
-    Map<String, NearestStation> stations = <String, NearestStation>{};
-
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the collection of all stations from the metadata.
-      (data['metadata']['stations'] as List).forEach((element) {
-        if (!stations.containsKey(element['id'])) {
-          stations[element['id']] = NearestStation(
-            id: element['id'],
-            name: element['name'],
-            geoposition: Geoposition(
-              latitude: element['location']['latitude'],
-              longitude: element['location']['longitude'],
+      // Server-side timestamp.
+      DateTime creation =
+          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+
+      List<dynamic> stations = data['metadata']['stations'];
+
+      return (data['items'][0]['readings'] as List).map((e) {
+        dynamic s = stations.firstWhere((s) => s['id'] == e['station_id']);
+
+        return Reading(
+          type: type,
+          creation: creation,
+          provider: Provider.station(
+            id: s['id'],
+            name: s['name'],
+            location: Geoposition(
+              latitude: s['location']['latitude'],
+              longitude: s['location']['longitude'],
             ),
-          );
-        }
-      });
-
-      DateTime serverTimestamp =
-          DateTime.tryParse(data['items'][0]['timestamp']);
-
-      // Fill in the readings.
-      (data['items'][0]['readings'] as List).forEach((element) {
-        NearestStation station;
-        if (stations.containsKey(element['station_id'])) {
-          station = stations[element['station_id']];
-        }
-        if (station != null) {
-          // The value may be returned with or without a decimal point, so a
-          // conversion is needed.
-          double value = (element['value'] as num).toDouble();
-
-          switch (type) {
-            case WeatherReadingType.airTemperature:
-              station.airTemperature = value;
-              station.airTemperatureTimestamp = serverTimestamp;
-              break;
-
-            case WeatherReadingType.rainfall:
-              station.rainfall = value;
-              station.rainfallTimestamp = serverTimestamp;
-              break;
-
-            case WeatherReadingType.relativeHumidity:
-              station.relativeHumidity = value;
-              station.relativeHumidityTimestamp = serverTimestamp;
-              break;
-
-            case WeatherReadingType.windDirection:
-              station.windDirection = value.toInt();
-              station.windDirectionTimestamp = serverTimestamp;
-              break;
-
-            case WeatherReadingType.windSpeed:
-              station.windSpeed = knotsToMetersPerSecond(value);
-              station.windSpeedTimestamp = serverTimestamp;
-              break;
-          }
-
-          station.timestamp = timestamp;
-        }
+          ),
+          userLocation: userLocation,
+          value: e['value'],
+        );
       });
     }
 
-    return stations;
-  }
-
-  Future<Map<String, NearestStation>> _fetchAirTemperature({
-    @required DateTime timestamp,
-  }) {
-    return _fetchRealtimeWeatherReadings(
-      timestamp: timestamp,
-      url: constants.airTemperatureUrl,
-      type: WeatherReadingType.airTemperature,
-    );
-  }
-
-  Future<Map<String, NearestStation>> _fetchRainfall({
-    @required DateTime timestamp,
-  }) {
-    return _fetchRealtimeWeatherReadings(
-      timestamp: timestamp,
-      url: constants.rainfallUrl,
-      type: WeatherReadingType.rainfall,
-    );
-  }
-
-  Future<Map<String, NearestStation>> _fetchRelativeHumidity({
-    @required DateTime timestamp,
-  }) {
-    return _fetchRealtimeWeatherReadings(
-      timestamp: timestamp,
-      url: constants.relativeHumidityUrl,
-      type: WeatherReadingType.relativeHumidity,
-    );
-  }
-
-  Future<Map<String, NearestStation>> _fetchWindDirection({
-    @required DateTime timestamp,
-  }) {
-    return _fetchRealtimeWeatherReadings(
-        timestamp: timestamp,
-        url: constants.windDirectionUrl,
-        type: WeatherReadingType.windDirection);
-  }
-
-  Future<Map<String, NearestStation>> _fetchWindSpeed({
-    @required DateTime timestamp,
-  }) {
-    return _fetchRealtimeWeatherReadings(
-        timestamp: timestamp,
-        url: constants.windSpeedUrl,
-        type: WeatherReadingType.windSpeed);
+    return null;
   }
 
   /// Fetches actual data using the 2-hour weather forecast API.
-  Future<Map<String, NearestForecastArea>> _fetch2HourWeatherForecasts({
+  Future<Iterable<Forecast>> _fetch2HourForecasts({
     @required DateTime timestamp,
+    @required Geoposition userLocation,
   }) async {
     if (timestamp == null) return null;
 
+    // Perform a fetch only if we are over the validity period.
+    if (_x2HourForecastExpiry != null &&
+        timestamp.isBefore(_x2HourForecastExpiry)) {
+      return null;
+    }
+
     String fullUrl =
-        '${constants.forecast2HourUrl}?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_2HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
 
-    Map<String, NearestForecastArea> forecastAreas =
-        <String, NearestForecastArea>{};
-
     if (data['api_info']['status'] == 'healthy') {
-      // Generate the collection of all areas from the metadata.
-      (data['area_metadata'] as List).forEach((element) {
-        if (!forecastAreas.containsKey(element['name'])) {
-          forecastAreas[element['name']] = NearestForecastArea(
-            id: element['name'],
-            name: element['name'],
-            geoposition: Geoposition(
-              latitude: element['label_location']['latitude'],
-              longitude: element['label_location']['longitude'],
+      // Server-side timestamp.
+      DateTime creation =
+          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+
+      List<dynamic> areas = data['area_metadata'];
+
+      return (data['items'][0]['forecasts'] as List).map((e) {
+        dynamic a = areas.firstWhere((a) => a['name'] == e['area']);
+
+        return Forecast(
+          type: ForecastType.immediate,
+          creation: creation,
+          provider: Provider.area(
+            id: a['name'],
+            name: a['name'],
+            location: Geoposition(
+              latitude: a['label_location']['latitude'],
+              longitude: a['label_location']['longitude'],
             ),
-          );
-        }
-      });
-
-      DateTime serverTimestamp =
-          DateTime.tryParse(data['items'][0]['timestamp']);
-
-      // Fill in the forecasts.
-      (data['items'][0]['forecasts'] as List).forEach((element) {
-        NearestForecastArea forecastArea;
-        if (forecastAreas.containsKey(element['area'])) {
-          forecastArea = forecastAreas[element['area']];
-        }
-        if (forecastArea != null) {
-          forecastArea.forecast = element['forecast'];
-          forecastArea.forecastTimestamp = serverTimestamp;
-          forecastArea.timestamp = timestamp;
-        }
+          ),
+          userLocation: userLocation,
+          condition: e['forecast'],
+        );
       });
     }
 
-    return forecastAreas;
+    return null;
   }
 
   /// Fetches actual data using the 24-hour weather forecast API.
-  Future<Map<String, NearestForecastRegion>> _fetch24HourWeatherForecasts({
+  Future<Iterable<List<Forecast>>> _fetch24HourForecasts({
     @required DateTime timestamp,
+    @required Geoposition userLocation,
   }) async {
     if (timestamp == null) return null;
 
+    // Perform a fetch only if we are over the validity period.
+    if (_x24HourForecastExpiry != null &&
+        timestamp.isBefore(_x24HourForecastExpiry)) {
+      return null;
+    }
+
     String fullUrl =
-        '${constants.forecast24HourUrl}?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_24HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
 
-    List<String> supportedRegions = <String>[
-      'central',
-      'north',
-      'east',
-      'south',
-      'west',
-    ];
-
-    Map<String, NearestForecastRegion> forecastRegions =
-        <String, NearestForecastRegion>{};
-
     if (data['api_info']['status'] == 'healthy') {
-      // Gather the common details across regions.
-      DateTime serverTimestamp =
-          DateTime.tryParse(data['items'][0]['timestamp']);
-      String overallForecast = data['items'][0]['general']['forecast'];
-      int minAirTemperature = data['items'][0]['general']['temperature']['low'];
-      int maxAirTemperature =
-          data['items'][0]['general']['temperature']['high'];
-      int minRelativeHumidity =
-          data['items'][0]['general']['relative_humidity']['low'];
-      int maxRelativeHumidity =
-          data['items'][0]['general']['relative_humidity']['high'];
-      int minWindSpeed = knotsToMetersPerSecond(
-              data['items'][0]['general']['wind']['speed']['low'])
-          .round();
-      int maxWindSpeed = knotsToMetersPerSecond(
-              data['items'][0]['general']['wind']['speed']['high'])
-          .round();
-      String windDirection = data['items'][0]['general']['wind']['direction'];
+      // Server-side timestamp.
+      DateTime creation =
+          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
 
-      // Prepare a fresh object for each region and fill in the common details.
-      supportedRegions.forEach((element) {
-        forecastRegions[element] = NearestForecastRegion(
-          id: element,
-          name: element,
-          geoposition: _getPositionFromRegionName(element),
-          timestamp: serverTimestamp,
-          overallForecast: overallForecast,
-          minAirTemperature: minAirTemperature,
-          maxAirTemperature: maxAirTemperature,
-          minRelativeHumidity: minRelativeHumidity,
-          maxRelativeHumidity: maxRelativeHumidity,
-          minWindSpeed: minWindSpeed,
-          maxWindSpeed: maxWindSpeed,
-          windDirection: windDirection,
-        );
-      });
+      // Prepare 5 lists to return, each representing one reference region.
+      Map<Provider, List<Forecast>> regionLists = {
+        Providers.central: [],
+        Providers.north: [],
+        Providers.east: [],
+        Providers.south: [],
+        Providers.west: [],
+      };
 
-      // Fill in the forecast for each chunk.
-      (data['items'][0]['periods'] as List).asMap().forEach((index, element) {
-        DateTime forecastChunkStartTime =
-            DateTime.parse(element['time']['start']);
+      (data['items'][0]['periods'] as List).forEach((e) {
+        ForecastType type;
 
-        ForecastChunk forecastChunk;
-        switch (forecastChunkStartTime.toLocal().hour) {
+        DateTime startTime = DateTime.parse(e['time']['start']).toLocal();
+        switch (startTime.hour) {
           case 0:
-            forecastChunk = ForecastChunk.predawn;
+            type = ForecastType.predawn;
             break;
 
           case 6:
-            forecastChunk = ForecastChunk.morning;
+            type = ForecastType.morning;
             break;
 
           case 12:
-            forecastChunk = ForecastChunk.afternoon;
+            type = ForecastType.afternoon;
             break;
 
           case 18:
-            forecastChunk = ForecastChunk.night;
+            type = ForecastType.night;
             break;
         }
 
-        if (forecastChunk != null) {
-          supportedRegions.forEach((region) {
-            forecastRegions[region].forecasts ??= <ForecastChunk, String>{};
-
-            forecastRegions[region].forecasts[forecastChunk] =
-                element['regions'][region];
-
-            if (index == 0) {
-              forecastRegions[region]
-                ..firstForecastChunk = forecastChunk
-                ..firstForecastChunkStartTime = forecastChunkStartTime;
-
-              switch (forecastChunk) {
-                case ForecastChunk.predawn:
-                  forecastRegions[region].forecastOrder = <ForecastChunk>[
-                    ForecastChunk.predawn,
-                    ForecastChunk.morning,
-                    ForecastChunk.afternoon,
-                    ForecastChunk.night,
-                  ];
-                  break;
-
-                case ForecastChunk.morning:
-                  forecastRegions[region].forecastOrder = <ForecastChunk>[
-                    ForecastChunk.morning,
-                    ForecastChunk.afternoon,
-                    ForecastChunk.night,
-                  ];
-                  break;
-
-                case ForecastChunk.afternoon:
-                  forecastRegions[region].forecastOrder = <ForecastChunk>[
-                    ForecastChunk.afternoon,
-                    ForecastChunk.night,
-                    ForecastChunk.morning,
-                  ];
-                  break;
-
-                case ForecastChunk.night:
-                  forecastRegions[region].forecastOrder = <ForecastChunk>[
-                    ForecastChunk.night,
-                    ForecastChunk.morning,
-                    ForecastChunk.afternoon,
-                  ];
-                  break;
-              }
-            }
-          });
-        }
+        regionLists.forEach((k, v) {
+          v.add(
+            Forecast(
+              type: type,
+              creation: creation,
+              provider: k,
+              userLocation: userLocation,
+              condition: e['regions'][k.name],
+            ),
+          );
+        });
       });
+
+      return regionLists.values;
     }
 
-    return forecastRegions;
-  }
-
-  /// Gets the reference [Geoposition] for the region with [regionName].
-  Geoposition _getPositionFromRegionName(String regionName) {
-    switch (regionName) {
-      case 'central':
-        return constants.centralRegion;
-
-      case 'north':
-        return constants.northRegion;
-
-      case 'east':
-        return constants.eastRegion;
-
-      case 'south':
-        return constants.southRegion;
-
-      case 'west':
-        return constants.westRegion;
-
-      default:
-        return null;
-    }
-  }
-
-  NearestStation _updateAirTemperatureAnomalies(NearestStation s) {
-    if (s != null) {
-      s.readingAnomaly = false;
-      s.timestampAnomaly =
-          s.airTemperatureTimestamp.difference(_timestamp).abs() >
-              config.maxReadingRecency;
-      s.distanceAnomaly = s.distance > config.maxDistance;
-    }
-
-    return s;
-  }
-
-  NearestStation _updateRainfallAnomalies(NearestStation s) {
-    if (s != null) {
-      s.readingAnomaly = false;
-      s.timestampAnomaly = s.rainfallTimestamp.difference(_timestamp).abs() >
-          config.maxReadingRecency;
-      s.distanceAnomaly = s.distance > config.maxDistance;
-    }
-
-    return s;
-  }
-
-  NearestStation _updateRelativeHumidityAnomalies(NearestStation s) {
-    if (s != null) {
-      s.readingAnomaly = false;
-      s.timestampAnomaly =
-          s.relativeHumidityTimestamp.difference(_timestamp).abs() >
-              config.maxReadingRecency;
-      s.distanceAnomaly = s.distance > config.maxDistance;
-    }
-
-    return s;
-  }
-
-  NearestStation _updateWindDirectionWindSpeedAnomalies(NearestStation s) {
-    if (s != null) {
-      s.readingAnomaly = false;
-      s.timestampAnomaly = s.windSpeedTimestamp.difference(_timestamp).abs() >
-          config.maxReadingRecency;
-      s.distanceAnomaly = s.distance > config.maxDistance;
-    }
-
-    return s;
-  }
-
-  NearestForecastArea _update2HourForecastAnomalies(NearestForecastArea f) {
-    if (f != null) {
-      f.forecastAnomaly = f.forecast == null || f.forecast.isEmpty;
-      f.timestampAnomaly = f.forecastTimestamp.difference(_timestamp).abs() >
-          config.maxReadingRecency;
-      f.distanceAnomaly = f.distance > config.maxDistance;
-    }
-
-    return f;
-  }
-
-  NearestForecastRegion _update24HourForecastAnomalies(
-      NearestForecastRegion f) {
-    if (f != null) {
-      f.forecastAnomaly = f.overallForecast == null ||
-          f.overallForecast.isEmpty ||
-          (f.forecasts.length != 3 && f.forecasts.length != 4);
-      f.timestampAnomaly = f.timestamp.difference(_timestamp).abs() >
-          config.max24HourForecastRecency;
-      f.distanceAnomaly = f.distance > config.maxRegionDistance;
-    }
-
-    return f;
+    return null;
   }
 
   /// Handles the results coming from parallel API calls.
   ///
-  /// Modifies [_stations], [_forecastAreas] and [_forecastRegions] directly.
-  ///
   /// See [fetchReadings()] (specifically the call to [Future.wait()]) to find
   /// out the order of the results.
-  void _processFetchResults(List<dynamic> resultsList) {
-    resultsList.asMap().forEach((index, element) {
-      // Handle readings.
-      if (index < 5) {
-        if (element != null && element is Map<String, NearestStation>) {
-          // Merge all the stations together.
-          element.forEach((key, value) {
-            if (_stations.containsKey(key)) {
-              _stations[key].merge(value);
-            } else {
-              _stations[key] = value;
-            }
-          });
-        }
-      }
+  void _collectFetchResults(List<dynamic> resultsList) {
+    // Handle temperature readings.
+    if (resultsList[0] != null && resultsList[0] is Iterable<Reading>) {
+      _temperatureReadings = resultsList[0].toList();
 
-      // Handle 2-hour forecasts.
-      if (index == 5) {
-        if (element != null && element is Map<String, NearestForecastArea>) {
-          _forecastAreas = element;
-        }
+      if (_temperatureReadings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.temperature] =
+            _temperatureReadings.first.expiry;
       }
+    }
 
-      // Handle 24-hour forecasts.
-      if (index == 6) {
-        if (element != null && element is Map<String, NearestForecastRegion>) {
-          _forecastRegions = element;
-        }
+    // Handle rainfall readings.
+    if (resultsList[1] != null && resultsList[1] is Iterable<Reading>) {
+      _rainfallReadings = resultsList[1].toList();
+
+      if (_rainfallReadings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.rainfall] =
+            _rainfallReadings.first.expiry;
       }
-    });
+    }
+
+    // Handle relative humidity readings.
+    if (resultsList[2] != null && resultsList[2] is Iterable<Reading>) {
+      _humidityReadings = resultsList[2].toList();
+
+      if (_humidityReadings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.humidity] =
+            _humidityReadings.first.expiry;
+      }
+    }
+
+    // Handle wind speed readings.
+    if (resultsList[3] != null && resultsList[3] is Iterable<Reading>) {
+      _windSpeedReadings = resultsList[3].toList();
+
+      if (_windSpeedReadings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.windSpeed] =
+            _windSpeedReadings.first.expiry;
+      }
+    }
+
+    // Handle wind direction readings.
+    if (resultsList[4] != null && resultsList[4] is Iterable<Reading>) {
+      _windDirectionReadings = resultsList[4].toList();
+
+      if (_windDirectionReadings.isNotEmpty) {
+        _readingTypeExpiry[ReadingType.windDirection] =
+            _windDirectionReadings.first.expiry;
+      }
+    }
+
+    // Handle 2-hour forecasts.
+    if (resultsList[5] != null && resultsList[5] is Iterable<Forecast>) {
+      _x2HourForecasts = resultsList[5].toList();
+
+      if (_x2HourForecasts.isNotEmpty) {
+        _x2HourForecastExpiry = _x2HourForecasts.first.expiry;
+      }
+    }
+
+    // Handle 24-hour forecasts.
+    if (resultsList[6] != null && resultsList[6] is Iterable<List<Forecast>>) {
+      _x24HourForecasts = resultsList[6].toList();
+
+      if (_x24HourForecasts.isNotEmpty) {
+        _x24HourForecastExpiry = _x24HourForecasts.first.first.expiry;
+      }
+    }
   }
-}
 
-enum WeatherReadingType {
-  airTemperature,
-  rainfall,
-  relativeHumidity,
-  windDirection,
-  windSpeed,
+  /// The URL of realtime air temperature readings API (at Data.gov.sg).
+  ///
+  /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is °C.
+  ///
+  /// See https://data.gov.sg/dataset/realtime-weather-readings.
+  static const String _temperatureUrl =
+      'https://api.data.gov.sg/v1/environment/air-temperature';
+
+  /// The URL of realtime rainfall readings API (at Data.gov.sg).
+  ///
+  /// Updates every 5 minutes. Takes parameter date_time=<ISO8601>. Unit is mm.
+  ///
+  /// See https://data.gov.sg/dataset/realtime-weather-readings.
+  static const String _rainfallUrl =
+      'https://api.data.gov.sg/v1/environment/rainfall';
+
+  /// The URL of realtime relative humidity readings API (at Data.gov.sg).
+  ///
+  /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is %.
+  ///
+  /// See https://data.gov.sg/dataset/realtime-weather-readings.
+  static const String _humidityUrl =
+      'https://api.data.gov.sg/v1/environment/relative-humidity';
+
+  /// The URL of realtime wind speed readings API (at Data.gov.sg).
+  ///
+  /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is knot.
+  ///
+  /// See https://data.gov.sg/dataset/realtime-weather-readings.
+  static const String _windSpeedUrl =
+      'https://api.data.gov.sg/v1/environment/wind-speed';
+
+  /// The URL of realtime wind direction readings API (at Data.gov.sg).
+  ///
+  /// Updates every 1 minute. Takes parameter date_time=<ISO8601>. Unit is °.
+  ///
+  /// See https://data.gov.sg/dataset/realtime-weather-readings.
+  static const String _windDirectionUrl =
+      'https://api.data.gov.sg/v1/environment/wind-direction';
+
+  /// The URL of the 2-hour weather forecast API (at Data.gov.sg).
+  ///
+  /// Updates every 30 minutes. Takes parameter date_time=<ISO8601>.
+  ///
+  /// See https://data.gov.sg/dataset/weather-forecast.
+  static const String _2HourForecastUrl =
+      'https://api.data.gov.sg/v1/environment/2-hour-weather-forecast';
+
+  /// The URL of the 24-hour weather forecast API (at Data.gov.sg).
+  ///
+  /// Takes parameter date_time=<ISO8601>.
+  ///
+  /// See https://data.gov.sg/dataset/weather-forecast.
+  static const String _24HourForecastUrl =
+      'https://api.data.gov.sg/v1/environment/24-hour-weather-forecast';
 }

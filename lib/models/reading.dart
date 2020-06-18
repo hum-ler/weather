@@ -75,7 +75,7 @@ class Reading {
     ReadingType.humidity: const Duration(minutes: 10),
     ReadingType.windSpeed: const Duration(minutes: 10),
     ReadingType.windDirection: const Duration(minutes: 10),
-    ReadingType.pm2_5: const Duration(hours: 2),
+    ReadingType.pm2_5: const Duration(hours: 1, minutes: 10),
   };
 
   /// The minimum (reasonable) values for each [ReadingType].

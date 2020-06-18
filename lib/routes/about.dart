@@ -4,7 +4,14 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
-  final String _title = 'Weather · Right Here · Right Now · 0.1';
+  /// The app version number.
+  ///
+  /// Keep this in sync with pubspec.yaml.
+  final String _version = 'Weather · Right Here · Right Now · 1.0.0+1';
+
+  /// The app information (in Markdown).
+  ///
+  /// Keep this in sync with README.md.
   final String _data = r'''
 ## Usage
 
@@ -42,7 +49,7 @@ This app is written using [Flutter SDK](https://flutter.dev) 1.17.3 and includes
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              _title,
+              _version,
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme

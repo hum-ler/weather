@@ -17,32 +17,56 @@ class Weather {
 
   factory Weather() => _singleton;
 
+  // Keeping the internal lists below separate because:
+  // - There is no convenient way of merging Readings.
+  // - These are only used by the respective getNearest... methods.
+  //
+  // This means that the user will need to manually merge Readings from the same
+  // Provider by comparing Reading.provider.id.
+
+  /// The collection of temperature readings.
   List<Reading> _temperatureReadings = [];
 
+  /// The collection of rainfall readings.
   List<Reading> _rainfallReadings = [];
 
+  /// The collection of relative humidity readings.
   List<Reading> _humidityReadings = [];
 
+  /// The collection of wind speed readings.
   List<Reading> _windSpeedReadings = [];
 
+  /// The collection of wind direction readings.
+  ///
+  /// These readings are not useful unless paired with a corresponding reading
+  /// from [_windSpeedReading].
   List<Reading> _windDirectionReadings = [];
 
+  /// The collection of 2-hour forecasts.
   List<Forecast> _x2HourForecasts = [];
 
+  /// The collection of 24-hour forecasts.
   List<List<Forecast>> _x24HourForecasts = [];
 
-  /// The collection of [Reading.expiry] for each nearest [ReadingType].
+  /// The collection of [Reading.expiry] for each [ReadingType].
   ///
   /// Used by [_fetchReadingsOfType()] to determine whether to fetch fresh data.
   Map<ReadingType, DateTime> _readingTypeExpiry = {};
 
+  /// The [Reading.expiry] for 2-hour forecasts.
+  ///
+  /// Used by [_fetch2HourForecasts()] to determine whether to fetch fresh data.
   DateTime _x2HourForecastExpiry;
 
+  /// The [Reading.expiry] for 24-hour forecasts.
+  ///
+  /// Used by [_fetch24HourForecasts()] to determine whether to fetch fresh
+  /// data.
   DateTime _x24HourForecastExpiry;
 
   /// Retrieve readings and forecasts.
   ///
-  /// Call this before calling any getNearest... methods,
+  /// Call this before any getNearest... methods,
   /// [getNearestCondition()] or [getNearest24HourForecasts()].
   Future<void> fetchReadings({
     DateTime timestamp,
@@ -143,8 +167,15 @@ class Weather {
 
   /// Gets the nearest weather condition.
   ///
+  /// We are using the 2-hour forecast to approximate the current condition.
+  ///
   /// Call [fetchReadings()] before calling this method.
-  Condition getNearestCondition() {
+  Condition getNearestCondition() => getNearest2HourForecast();
+
+  /// Gets the nearest 2-hour forecast.
+  ///
+  /// Call [fetchReadings()] before calling this method.
+  Forecast getNearest2HourForecast() {
     if (_x2HourForecasts.isEmpty) return null;
 
     return _x2HourForecasts.reduce((v, e) => v.distance < e.distance ? v : e);
@@ -236,7 +267,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$_2HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_x2HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
@@ -285,7 +316,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$_24HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_x24HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
@@ -345,10 +376,17 @@ class Weather {
     return null;
   }
 
-  /// Handles the results coming from parallel API calls.
+  /// Handles the results coming back from parallel API calls.
   ///
   /// See [fetchReadings()] (specifically the call to [Future.wait()]) to find
-  /// out the order of the results.
+  /// out the expected order of the results:
+  /// - temperature
+  /// - rainfall
+  /// - relative humidity
+  /// - wind speed
+  /// - wind direction
+  /// - 2-hour forecasts
+  /// - 24-hour forecasts
   void _collectFetchResults(List<dynamic> resultsList) {
     // Handle temperature readings.
     if (resultsList[0] != null && resultsList[0] is Iterable<Reading>) {
@@ -474,7 +512,7 @@ class Weather {
   /// Updates every 30 minutes. Takes parameter date_time=<ISO8601>.
   ///
   /// See https://data.gov.sg/dataset/weather-forecast.
-  static const String _2HourForecastUrl =
+  static const String _x2HourForecastUrl =
       'https://api.data.gov.sg/v1/environment/2-hour-weather-forecast';
 
   /// The URL of the 24-hour weather forecast API (at Data.gov.sg).
@@ -482,6 +520,6 @@ class Weather {
   /// Takes parameter date_time=<ISO8601>.
   ///
   /// See https://data.gov.sg/dataset/weather-forecast.
-  static const String _24HourForecastUrl =
+  static const String _x24HourForecastUrl =
       'https://api.data.gov.sg/v1/environment/24-hour-weather-forecast';
 }

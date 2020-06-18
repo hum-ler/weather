@@ -10,14 +10,14 @@ extension StringExt on String {
       throw ArgumentError.value(
         maxLength,
         'maxLength',
-        'maxLength must be greater than 0',
+        'maxLength < 1',
       );
     }
     if (ellipsis != null && ellipsis.length >= maxLength) {
       throw ArgumentError.value(
         ellipsis,
         'ellipsis',
-        'ellipsis.length must be less than maxLength',
+        'ellipsis.length >= maxLength',
       );
     }
 

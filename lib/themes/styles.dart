@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// The style for small-size text.
-const TextStyle smallTextStyle = TextStyle(
-  fontSize: 12.0,
-);
+const TextStyle smallTextStyle = TextStyle(fontSize: 12.0);
 
 /// The style for medium-size text.
-const TextStyle mediumTextStyle = TextStyle(
-  fontSize: 14.0,
-);
+const TextStyle mediumTextStyle = TextStyle(fontSize: 14.0);
 
 /// The style for large-size text.
 const TextStyle largeTextStyle = TextStyle(
@@ -40,7 +36,7 @@ const Color errorColor = Colors.red;
 final Color outOfDateColor = Colors.grey;
 
 /// The pattern for displaying [DateTime]s to the user.
-const String dateTimePattern = 'd MMM H:mm';
+const String dateTimePattern = 'd MMM h:mm';
 
 /// The app light theme.
 final ThemeData lightTheme = ThemeData.light().copyWith(

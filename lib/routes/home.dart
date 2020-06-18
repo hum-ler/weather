@@ -183,9 +183,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           ),
           ReversedExpansionPanelList(
             expansionCallback: (int index, bool isExpanded) {
-              setState(() {
-                _detailsPanelIsExpanded = !isExpanded;
-              });
+              setState(() => _detailsPanelIsExpanded = !isExpanded);
             },
             expandedHeaderPadding: null,
             children: <ExpansionPanel>[
@@ -246,7 +244,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               color: _temperature.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_temperature.creation.format(dateTimePattern)}',
+                              _temperature.creation.format(dateTimePattern),
                               style: _temperature.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,
@@ -285,7 +283,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               color: _rainfall.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_rainfall.creation.format(dateTimePattern)}',
+                              _rainfall.creation.format(dateTimePattern),
                               style: _rainfall.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,
@@ -324,7 +322,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               color: _humidity.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_humidity.creation.format(dateTimePattern)}',
+                              _humidity.creation.format(dateTimePattern),
                               style: _humidity.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,
@@ -369,7 +367,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               color: _windSpeed.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_windSpeed.creation.format(dateTimePattern)}',
+                              _windSpeed.creation.format(dateTimePattern),
                               style: _windSpeed.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,
@@ -418,7 +416,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                   _windDirection.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_windDirection.creation.format(dateTimePattern)}',
+                              _windDirection.creation.format(dateTimePattern),
                               style: _windDirection.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,
@@ -461,7 +459,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               color: _condition.isExpired ? errorColor : null,
                             ),
                             Text(
-                              '${_condition.creation.format(dateTimePattern)}',
+                              _condition.creation.format(dateTimePattern),
                               style: _condition.isExpired
                                   ? smallTextStyle.copyWith(color: errorColor)
                                   : smallTextStyle,

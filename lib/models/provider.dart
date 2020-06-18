@@ -60,12 +60,12 @@ class Provider {
     @required String id,
     @required String name,
     @required Geoposition location,
-  }) : this (
-      id: id,
-      name: name,
-      type: ProviderType.region,
-      location: location,
-    );
+  }) : this(
+          id: id,
+          name: name,
+          type: ProviderType.region,
+          location: location,
+        );
 
   /// The effective range for each [ProviderType].
   static const Map<ProviderType, double> _effectiveRange = {
@@ -86,14 +86,19 @@ enum ProviderType {
 ///
 /// Mainly used by the 24-hour forecast, which has region names but no
 /// associated coordinates.
-class Providers {
+///
+/// Reference positions are based on metadata from PM2.5 call.
+abstract class Providers {
+  // Prevent instantiation and extension.
+  Providers._();
+
   /// The reference central region.
   static const Provider central = Provider.region(
     id: 'central',
     name: 'central',
     location: const Geoposition(
-      latitude: 1.360195,
-      longitude: 103.815675,
+      latitude: 1.35735,
+      longitude: 103.82,
     ),
   );
 
@@ -102,8 +107,8 @@ class Providers {
     id: 'north',
     name: 'north',
     location: const Geoposition(
-      latitude: 1.439147,
-      longitude: 103.815675,
+      latitude: 1.41803,
+      longitude: 103.82,
     ),
   );
 
@@ -112,8 +117,8 @@ class Providers {
     id: 'east',
     name: 'east',
     location: const Geoposition(
-      latitude: 1.360195,
-      longitude: 103.992073,
+      latitude: 1.35735,
+      longitude: 103.94,
     ),
   );
 
@@ -122,8 +127,8 @@ class Providers {
     id: 'south',
     name: 'south',
     location: const Geoposition(
-      latitude: 1.290981,
-      longitude: 103.815675,
+      latitude: 1.29587,
+      longitude: 103.82,
     ),
   );
 
@@ -132,8 +137,8 @@ class Providers {
     id: 'west',
     name: 'west',
     location: const Geoposition(
-      latitude: 1.360195,
-      longitude: 103.669195,
+      latitude: 1.35735,
+      longitude: 103.7,
     ),
   );
 }

@@ -107,6 +107,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 builder: (context, constraints) => SingleChildScrollView(
                   physics: AlwaysScrollableScrollPhysics(),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/kucinta.jpg'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black.withOpacity(0.5)
+                              : Colors.white.withOpacity(0.75),
+                          BlendMode.srcATop,
+                        ),
+                      ),
+                    ),
                     height: MediaQuery.of(context).size.height -
                         Scaffold.of(context).appBarMaxHeight -
                         // Might be impossible to get the height of the details

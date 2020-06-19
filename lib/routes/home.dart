@@ -106,7 +106,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               child: LayoutBuilder(
                 builder: (context, constraints) => SingleChildScrollView(
                   physics: AlwaysScrollableScrollPhysics(),
-                  child: Container(
+                  child: AnimatedContainer(
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/images/kucinta.jpg'),
@@ -121,11 +121,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     ),
                     height: MediaQuery.of(context).size.height -
                         Scaffold.of(context).appBarMaxHeight -
-                        // Might be impossible to get the height of the details
-                        // panel programmatically because it has not been built
-                        // yet. The value here (56) is observed from Flutter
-                        // Inspector.
-                        56,
+                        _getDetailsPanelHeight(),
+                    duration: kThemeAnimationDuration,
+                    curve: Curves.fastOutSlowIn,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
@@ -598,6 +596,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       _forecasts = Weather().getNearest24HourForecast();
     });
   }
+
+  /// Gets the height of the details panel.
+  ///
+  /// This might be impossible to get programmatically the panel has not been
+  /// built yet. The values here are observed from Flutter Inspector.
+  int _getDetailsPanelHeight() => _detailsPanelIsExpanded ? 224 : 56;
 }
 
 /// Displays a [Forecast] with an icon and label.

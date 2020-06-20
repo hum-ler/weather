@@ -119,7 +119,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                         child: Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('assets/images/kucinta.jpg'),
+                              image: AssetImage(_getBackgroundAsset()),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
                                 Theme.of(context).brightness == Brightness.dark
@@ -590,6 +590,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+
+  /// Gets the name of the background image asset.
+  String _getBackgroundAsset() {
+    // Use _condition to determine the asset to return.
+
+    return 'assets/images/kucinta.jpg'; // The default image.
   }
 
   /// Fetches the weather data.

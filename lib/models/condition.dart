@@ -74,6 +74,7 @@ class Condition {
     'Light Rain': WeatherIcons.rain,
     'Light Showers': WeatherIcons.showers,
     'Moderate Rain': WeatherIcons.rain,
+    'Heavy Rain': WeatherIcons.rain,
     'Overcast': WeatherIcons.cloudy,
     'Partly Cloudy': WeatherIcons.cloud,
     'Partly Cloudy (Day)': WeatherIcons.day_sunny_overcast,

@@ -4,19 +4,21 @@ import 'package:http/http.dart';
 
 /// Gets JSON data from the internet.
 Future<dynamic> httpGetJsonData(String url) async {
-  Response response = await get(
-    url,
-    headers: {'Accept': 'application/json'},
-  );
+  try {
+    Response response = await get(
+      url,
+      headers: {'Accept': 'application/json'},
+    );
 
-  if (response.statusCode == 200) {
-    try {
-      return jsonDecode(response.body);
-    } catch (exception) {
-      print(exception);
+    if (response != null) {
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print(response.statusCode);
+      }
     }
-  } else {
-    print(response.statusCode);
+  } catch (exception) {
+    print(exception);
   }
 
   return null;

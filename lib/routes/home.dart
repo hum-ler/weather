@@ -57,12 +57,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// Indicates whether the details panel is expanded.
   bool _detailsPanelIsExpanded = false;
 
-  /// Height of the details panel.
+  /// The height of the details panel.
   ///
   /// As observed in Flutter Inspector. This might be difficult to set
   /// programmatically as the panel typically has not been built yet, or may
   /// cause a jarring UI update.
-  double get _detailsPanelHeight => 56.0;
+  final double _detailsPanelHeight = 56.0;
 
   @override
   void initState() {

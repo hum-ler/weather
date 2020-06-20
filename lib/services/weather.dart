@@ -122,7 +122,7 @@ class Weather {
       ),
     ]);
 
-    _collectFetchResults(resultsList);
+    _collectFetchResults(resultsList, timestamp);
   }
 
   /// Gets the nearest temperature reading.
@@ -457,72 +457,71 @@ class Weather {
   /// - wind direction
   /// - 2-hour forecasts
   /// - 24-hour forecasts
-  void _collectFetchResults(List<dynamic> resultsList) {
+  void _collectFetchResults(
+    List<dynamic> resultsList,
+    DateTime timestamp,
+  ) {
     // Handle temperature readings.
-    if (resultsList[0] != null && resultsList[0] is Iterable<Reading>) {
-      _temperatureReadings = resultsList[0].toList();
-
-      if (_temperatureReadings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.temperature] =
-            _temperatureReadings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.temperature,
+      _temperatureReadings,
+      resultsList[0],
+      timestamp,
+    );
 
     // Handle rainfall readings.
-    if (resultsList[1] != null && resultsList[1] is Iterable<Reading>) {
-      _rainfallReadings = resultsList[1].toList();
-
-      if (_rainfallReadings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.rainfall] =
-            _rainfallReadings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.rainfall,
+      _rainfallReadings,
+      resultsList[1],
+      timestamp,
+    );
 
     // Handle relative humidity readings.
-    if (resultsList[2] != null && resultsList[2] is Iterable<Reading>) {
-      _humidityReadings = resultsList[2].toList();
-
-      if (_humidityReadings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.humidity] =
-            _humidityReadings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.humidity,
+      _humidityReadings,
+      resultsList[2],
+      timestamp,
+    );
 
     // Handle wind speed readings.
-    if (resultsList[3] != null && resultsList[3] is Iterable<Reading>) {
-      _windSpeedReadings = resultsList[3].toList();
-
-      if (_windSpeedReadings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.windSpeed] =
-            _windSpeedReadings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.windSpeed,
+      _windSpeedReadings,
+      resultsList[3],
+      timestamp,
+    );
 
     // Handle wind direction readings.
-    if (resultsList[4] != null && resultsList[4] is Iterable<Reading>) {
-      _windDirectionReadings = resultsList[4].toList();
-
-      if (_windDirectionReadings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.windDirection] =
-            _windDirectionReadings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.windDirection,
+      _windDirectionReadings,
+      resultsList[4],
+      timestamp,
+    );
 
     // Handle PM2.5 readings.
-    if (resultsList[5] != null && resultsList[5] is Iterable<Reading>) {
-      _pm2_5Readings = resultsList[5].toList();
-
-      if (_pm2_5Readings.isNotEmpty) {
-        _readingTypeExpiry[ReadingType.pm2_5] = _pm2_5Readings.first.expiry;
-      }
-    }
+    _handleReadingsResult(
+      ReadingType.pm2_5,
+      _pm2_5Readings,
+      resultsList[5],
+      timestamp,
+    );
 
     // Handle 2-hour forecasts.
     if (resultsList[6] != null && resultsList[6] is Iterable<Forecast>) {
       _x2HourForecasts = resultsList[6].toList();
 
-      if (_x2HourForecasts.isNotEmpty) {
-        _x2HourForecastExpiry = _x2HourForecasts.first.expiry;
+      // Update the forecasts expiry.
+      _x2HourForecastExpiry =
+          _x2HourForecasts.isNotEmpty ? _x2HourForecasts.first.expiry : null;
+    } else {
+      // Clear off expired results to prevent reuse.
+      if (_x2HourForecastExpiry != null &&
+          _x2HourForecastExpiry.isBefore(timestamp)) {
+        _x2HourForecasts.clear();
+        _x2HourForecastExpiry = null;
       }
     }
 
@@ -530,8 +529,41 @@ class Weather {
     if (resultsList[7] != null && resultsList[7] is Iterable<List<Forecast>>) {
       _x24HourForecasts = resultsList[7].toList();
 
-      if (_x24HourForecasts.isNotEmpty) {
-        _x24HourForecastExpiry = _x24HourForecasts.first.first.expiry;
+      // Update the forecasts expiry.
+      _x24HourForecastExpiry = _x24HourForecasts.isNotEmpty
+          ? _x24HourForecasts.first.first.expiry
+          : null;
+    } else {
+      // Clear off expired results to prevent reuse.
+      if (_x24HourForecastExpiry != null &&
+          _x24HourForecastExpiry.isBefore(timestamp)) {
+        _x24HourForecasts.clear();
+        _x24HourForecastExpiry = null;
+      }
+    }
+  }
+
+  /// Handles the API call result for [type].
+  ///
+  /// This is a helper method for [_collectFetchResults()].
+  _handleReadingsResult(
+    ReadingType type,
+    List<Reading> prior,
+    dynamic result,
+    DateTime timestamp,
+  ) {
+    if (result != null && result is Iterable<Reading>) {
+      prior.clear();
+      prior.addAll(result);
+
+      // Update the readings expiry.
+      _readingTypeExpiry[type] = prior.isNotEmpty ? prior.first.expiry : null;
+    } else {
+      // Clear off expired results to prevent reuse.
+      if (_readingTypeExpiry[type] != null &&
+          _readingTypeExpiry[type].isBefore(timestamp)) {
+        prior.clear();
+        _readingTypeExpiry[type] = null;
       }
     }
   }

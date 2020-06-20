@@ -35,5 +35,8 @@ class Geolocation {
   }
 
   /// The timeout period for [getCurrentLocation()].
-  static const Duration _getCurrentLocationTimeout = Duration(seconds: 30);
+  ///
+  /// As we are using only ACCESS_COARSE_LOCATION, the locaton information will
+  /// come from NETWORK_PROVIDER, which should be really fast.
+  static const Duration _getCurrentLocationTimeout = Duration(seconds: 10);
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 /// The style for small-size text.
-const TextStyle smallTextStyle = TextStyle(fontSize: 12.0);
+const TextStyle smallText = TextStyle(fontSize: 12.0);
 
 /// The style for medium-size text.
-const TextStyle mediumTextStyle = TextStyle(fontSize: 14.0);
+const TextStyle mediumText = TextStyle(fontSize: 14.0);
 
 /// The style for large-size text.
-const TextStyle largeTextStyle = TextStyle(
+const TextStyle largeText = TextStyle(
   fontSize: 100.0,
   fontWeight: FontWeight.bold,
 );
@@ -34,6 +34,16 @@ const Color errorColor = Colors.red;
 ///
 /// Used for main display items outside the details panel.
 final Color outOfDateColor = Colors.grey;
+
+/// The style for small-size text with error highlight.
+final TextStyle smallTextWithError = smallText.copyWith(color: errorColor);
+
+/// The style for large-size text with error highlight.
+final TextStyle largeTextWithError = largeText.copyWith(color: errorColor);
+
+/// The style for large-size text with out-of-date highlight.
+final TextStyle largeTextWithOutOfDate =
+    largeText.copyWith(color: outOfDateColor);
 
 /// The pattern for displaying [DateTime]s to the user.
 const String dateTimePattern = 'd MMM h:mm';

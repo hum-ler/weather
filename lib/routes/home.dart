@@ -48,6 +48,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// The nearest 24-hour forecast.
   List<Forecast> _forecasts;
 
+  /// Generate a key for the scaffold.
+  ///
+  /// Can be used to show the snackbar.
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   /// Generate a key for the refresh indicator.
   ///
   /// Can be used to call [RefreshIndicator.show()] manually.
@@ -90,6 +95,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Weather · Right Here · Right Now'),
         actions: <Widget>[
@@ -600,10 +606,27 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   /// Fetches the weather data.
+  ///
+  /// Do not invoke this method directly. Use
+  /// _refreshIndicatorKey.currentState.show() instead.
   Future<void> _fetchData() async {
     setState(() => _fetchTimestamp = DateTime.now());
 
     Geoposition userLocation = await Geolocation().getCurrentLocation();
+    if (userLocation == null) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Cannot detect current location.'),
+          action: SnackBarAction(
+            label: 'RETRY',
+            onPressed: () => _refreshIndicatorKey.currentState.show(),
+          ),
+        ),
+      );
+
+      return;
+    }
 
     await Weather().fetchReadings(
       timestamp: _fetchTimestamp,
@@ -620,6 +643,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       _condition = Weather().getNearestCondition();
       _forecasts = Weather().getNearest24HourForecast();
     });
+    if (_temperature == null ||
+        _rainfall == null ||
+        _humidity == null ||
+        _windSpeed == null ||
+        _windDirection == null ||
+        _pm2_5 == null ||
+        _condition == null ||
+        _forecasts == null) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Cannot load data from weather service.'),
+          action: SnackBarAction(
+            label: 'RETRY',
+            onPressed: () => _refreshIndicatorKey.currentState.show(),
+          ),
+        ),
+      );
+    }
   }
 }
 

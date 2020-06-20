@@ -13,17 +13,27 @@ class Geolocation {
 
   /// Gets the user's current location.
   Future<Geoposition> getCurrentLocation() async {
-    Position position = await Geolocator().getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.low,
-    );
+    try {
+      Position position = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low)
+          .timeout(
+            _getCurrentLocationTimeout,
+            onTimeout: () => null,
+          );
 
-    if (position != null) {
-      return Geoposition(
-        latitude: position.latitude,
-        longitude: position.longitude,
-      );
+      if (position != null) {
+        return Geoposition(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+      }
+    } catch (exception) {
+      print(exception);
     }
 
     return null;
   }
+
+  /// The timeout period for [getCurrentLocation()].
+  static const Duration _getCurrentLocationTimeout = Duration(seconds: 30);
 }

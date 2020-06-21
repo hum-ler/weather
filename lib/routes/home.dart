@@ -601,8 +601,21 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// Gets the name of the background image asset.
   String _getBackgroundAsset() {
     // Use _condition to determine the asset to return.
+    final RegExp rain = RegExp('(rain|showers)', caseSensitive: false);
+    final RegExp cloud = RegExp('cloud', caseSensitive: false);
+    final RegExp day = RegExp('day', caseSensitive: false);
+    final RegExp night = RegExp('night', caseSensitive: false);
 
-    return 'assets/images/kucinta.jpg'; // The default image.
+    if (_condition != null) {
+      String condition = _condition.condition;
+
+      if (rain.hasMatch(condition)) return 'assets/images/rain.webp';
+      if (cloud.hasMatch(condition)) return 'assets/images/cloud.webp';
+      if (day.hasMatch(condition)) return 'assets/images/day.webp';
+      if (night.hasMatch(condition)) return 'assets/images/night.webp';
+    }
+
+    return 'assets/images/default.webp'; // The default image.
   }
 
   /// Fetches the weather data.

@@ -17,49 +17,33 @@ class Weather {
 
   factory Weather() => _singleton;
 
-  // Keeping the internal lists below separate because:
-  // - There is no convenient way of merging Readings.
-  // - These are only used by the respective getNearest... methods.
-  //
-  // This means that the user will need to manually merge Readings from the same
-  // Provider by comparing Reading.provider.id.
-
-  /// The collection of temperature readings.
-  List<Reading> _temperatureReadings = [];
-
-  /// The collection of rainfall readings.
-  List<Reading> _rainfallReadings = [];
-
-  /// The collection of relative humidity readings.
-  List<Reading> _humidityReadings = [];
-
-  /// The collection of wind speed readings.
-  List<Reading> _windSpeedReadings = [];
-
-  /// The collection of wind direction readings.
+  /// The collection of readings for each [ReadingType].
   ///
-  /// These readings are not useful unless paired with a corresponding reading
-  /// from [_windSpeedReading].
-  List<Reading> _windDirectionReadings = [];
-
-  /// The collection of PM2.5 readings.
-  List<Reading> _pm2_5Readings = [];
-
-  /// The collection of 2-hour forecasts.
-  List<Forecast> _x2HourForecasts = [];
-
-  /// The collection of 24-hour forecasts.
-  List<List<Forecast>> _x24HourForecasts = [];
+  /// Keeping the readings separate because:
+  /// - There is no convenient way of merging Readings.
+  /// - These are only used by the respective getNearest... methods.
+  ///
+  /// Some readings are correlated to one another. For example, a wind speed
+  /// reading is not useful unless paired with a corresponding wind direction
+  /// reading from the same provider. The user will need to manually relate
+  /// the two readings by comparing [Reading.provider.id].
+  Map<ReadingType, Iterable<Reading>> _readings = {};
 
   /// The collection of [Reading.expiry] for each [ReadingType].
   ///
   /// Used by [_fetchReadingsOfType()] to determine whether to fetch fresh data.
   Map<ReadingType, DateTime> _readingTypeExpiry = {};
 
+  /// The collection of 2-hour forecasts.
+  Iterable<Forecast> _x2HourForecasts;
+
   /// The [Reading.expiry] for 2-hour forecasts.
   ///
   /// Used by [_fetch2HourForecasts()] to determine whether to fetch fresh data.
   DateTime _x2HourForecastExpiry;
+
+  /// The collection of 24-hour forecasts.
+  Iterable<List<Forecast>> _x24HourForecasts;
 
   /// The [Reading.expiry] for 24-hour forecasts.
   ///
@@ -125,60 +109,55 @@ class Weather {
     _collectFetchResults(resultsList, timestamp);
   }
 
+  /// Gets the nearest reading of [type].
+  ///
+  /// Call [fetchReadings()] before calling this method.
+  Reading _getNearestReadingOfType(ReadingType type) {
+    if (_readings[type] == null || _readings[type].isEmpty) return null;
+
+    return _readings[type].reduce((v, e) => v.distance < e.distance ? v : e);
+  }
+
   /// Gets the nearest temperature reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestTemperatureReading() {
-    if (_temperatureReadings.isEmpty) return null;
-
-    return _temperatureReadings
-        .reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.temperature);
   }
 
   /// Gets the nearest rainfall reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestRainfallReading() {
-    if (_rainfallReadings.isEmpty) return null;
-
-    return _rainfallReadings.reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.rainfall);
   }
 
   /// Gets the nearest relative humidity reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestHumidityReading() {
-    if (_humidityReadings.isEmpty) return null;
-
-    return _humidityReadings.reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.humidity);
   }
 
   /// Gets the nearest wind speed reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestWindSpeedReading() {
-    if (_windSpeedReadings.isEmpty) return null;
-
-    return _windSpeedReadings.reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.windSpeed);
   }
 
   /// Gets the nearest wind direction reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestWindDirectionReading() {
-    if (_windDirectionReadings.isEmpty) return null;
-
-    return _windDirectionReadings
-        .reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.windDirection);
   }
 
   /// Gets the nearest PM2.5 reading.
   ///
   /// Call [fetchReadings()] before calling this method.
   Reading getNearestPM2_5Reading() {
-    if (_pm2_5Readings.isEmpty) return null;
-
-    return _pm2_5Readings.reduce((v, e) => v.distance < e.distance ? v : e);
+    return _getNearestReadingOfType(ReadingType.pm2_5);
   }
 
   /// Gets the nearest weather condition.
@@ -462,56 +441,50 @@ class Weather {
     DateTime timestamp,
   ) {
     // Handle temperature readings.
-    _handleReadingsResult(
-      ReadingType.temperature,
-      _temperatureReadings,
-      resultsList[0],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.temperature,
+      result: resultsList[0],
+      timestamp: timestamp,
     );
 
     // Handle rainfall readings.
-    _handleReadingsResult(
-      ReadingType.rainfall,
-      _rainfallReadings,
-      resultsList[1],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.rainfall,
+      result: resultsList[1],
+      timestamp: timestamp,
     );
 
     // Handle relative humidity readings.
-    _handleReadingsResult(
-      ReadingType.humidity,
-      _humidityReadings,
-      resultsList[2],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.humidity,
+      result: resultsList[2],
+      timestamp: timestamp,
     );
 
     // Handle wind speed readings.
-    _handleReadingsResult(
-      ReadingType.windSpeed,
-      _windSpeedReadings,
-      resultsList[3],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.windSpeed,
+      result: resultsList[3],
+      timestamp: timestamp,
     );
 
     // Handle wind direction readings.
-    _handleReadingsResult(
-      ReadingType.windDirection,
-      _windDirectionReadings,
-      resultsList[4],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.windDirection,
+      result: resultsList[4],
+      timestamp: timestamp,
     );
 
     // Handle PM2.5 readings.
-    _handleReadingsResult(
-      ReadingType.pm2_5,
-      _pm2_5Readings,
-      resultsList[5],
-      timestamp,
+    _handleReadingsResultOfType(
+      type: ReadingType.pm2_5,
+      result: resultsList[5],
+      timestamp: timestamp,
     );
 
     // Handle 2-hour forecasts.
     if (resultsList[6] != null && resultsList[6] is Iterable<Forecast>) {
-      _x2HourForecasts = resultsList[6].toList();
+      _x2HourForecasts = resultsList[6];
 
       // Update the forecasts expiry.
       _x2HourForecastExpiry =
@@ -520,14 +493,14 @@ class Weather {
       // Clear off expired results to prevent reuse.
       if (_x2HourForecastExpiry != null &&
           _x2HourForecastExpiry.isBefore(timestamp)) {
-        _x2HourForecasts.clear();
+        _x2HourForecasts = null;
         _x2HourForecastExpiry = null;
       }
     }
 
     // Handle 24-hour forecasts.
     if (resultsList[7] != null && resultsList[7] is Iterable<List<Forecast>>) {
-      _x24HourForecasts = resultsList[7].toList();
+      _x24HourForecasts = resultsList[7];
 
       // Update the forecasts expiry.
       _x24HourForecastExpiry = _x24HourForecasts.isNotEmpty
@@ -537,7 +510,7 @@ class Weather {
       // Clear off expired results to prevent reuse.
       if (_x24HourForecastExpiry != null &&
           _x24HourForecastExpiry.isBefore(timestamp)) {
-        _x24HourForecasts.clear();
+        _x24HourForecasts = null;
         _x24HourForecastExpiry = null;
       }
     }
@@ -546,23 +519,22 @@ class Weather {
   /// Handles the API call result for [type].
   ///
   /// This is a helper method for [_collectFetchResults()].
-  _handleReadingsResult(
-    ReadingType type,
-    List<Reading> prior,
-    dynamic result,
-    DateTime timestamp,
-  ) {
+  _handleReadingsResultOfType({
+    @required ReadingType type,
+    @required dynamic result,
+    @required DateTime timestamp,
+  }) {
     if (result != null && result is Iterable<Reading>) {
-      prior.clear();
-      prior.addAll(result);
+      _readings[type] = result;
 
       // Update the readings expiry.
-      _readingTypeExpiry[type] = prior.isNotEmpty ? prior.first.expiry : null;
+      _readingTypeExpiry[type] =
+          _readings[type].isNotEmpty ? _readings[type].first.expiry : null;
     } else {
       // Clear off expired results to prevent reuse.
       if (_readingTypeExpiry[type] != null &&
           _readingTypeExpiry[type].isBefore(timestamp)) {
-        prior.clear();
+        _readings[type] = null;
         _readingTypeExpiry[type] = null;
       }
     }

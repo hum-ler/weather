@@ -231,7 +231,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
@@ -286,7 +286,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$_pm2_5Url?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_pm2_5Url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
@@ -337,7 +337,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$_x2HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_x2HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;
@@ -386,7 +386,7 @@ class Weather {
     }
 
     String fullUrl =
-        '$_x24HourForecastUrl?date_time=${timestamp.toLocal().format("yyyy-MM-ddTHH:mm:ss")}';
+        '$_x24HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
     dynamic data = await httpGetJsonData(fullUrl);
     if (data == null) return null;

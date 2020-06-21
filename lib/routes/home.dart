@@ -223,7 +223,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                           children: <Widget>[
                             _BoxedIcon(icon: Icons.schedule),
                             Text(
-                              _fetchTimestamp.toLocal().format(dateTimePattern),
+                              _fetchTimestamp.format(dateTimePattern),
                               style: smallText,
                             ),
                           ],

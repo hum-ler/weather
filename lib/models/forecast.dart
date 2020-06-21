@@ -35,10 +35,10 @@ class Forecast extends Condition {
   /// The validity periods for each [ForecastType].
   static const Map<ForecastType, Duration> _validityPeriod = {
     ForecastType.immediate: const Duration(hours: 2),
-    ForecastType.predawn: const Duration(hours: 6),
-    ForecastType.morning: const Duration(hours: 6),
-    ForecastType.afternoon: const Duration(hours: 6),
-    ForecastType.night: const Duration(hours: 6),
+    ForecastType.predawn: const Duration(hours: 2),
+    ForecastType.morning: const Duration(hours: 2),
+    ForecastType.afternoon: const Duration(hours: 2),
+    ForecastType.night: const Duration(hours: 2),
   };
 }
 

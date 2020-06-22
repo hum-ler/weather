@@ -69,17 +69,26 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// cause a jarring UI update.
   final double _detailsPanelHeight = 56.0;
 
+  /// The opacity of the main information.
+  ///
+  /// Used to soften the transition between changes.
+  double _mainInfoOpacity = 1.0;
+
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance
       ..addObserver(this)
       ..addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
+
+    _mainInfoOpacity = 0.0;
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
     super.dispose();
   }
 
@@ -122,74 +131,81 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                     builder: (context, constraints) {
                       return SingleChildScrollView(
                         physics: AlwaysScrollableScrollPhysics(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(_getBackgroundAsset()),
-                              fit: BoxFit.cover,
-                              colorFilter: ColorFilter.mode(
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.black.withOpacity(0.5)
-                                    : Colors.white.withOpacity(0.75),
-                                BlendMode.srcATop,
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 500),
+                          opacity: _mainInfoOpacity,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(_getBackgroundAsset()),
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.black.withOpacity(0.5)
+                                      : Colors.white.withOpacity(0.75),
+                                  BlendMode.srcATop,
+                                ),
                               ),
                             ),
-                          ),
-                          height: MediaQuery.of(context).size.height -
-                              Scaffold.of(context).appBarMaxHeight -
-                              _detailsPanelHeight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    if (_temperature != null)
-                                      Text(
-                                        '${_temperature.value.round().toString()}°',
-                                        style: _temperature.isValid
-                                            ? largeText
-                                            : _temperature.isExpired
-                                                ? largeTextWithOutOfDate
-                                                : largeTextWithError,
-                                      ),
-                                    if (_condition != null)
-                                      BoxedIcon(
-                                        _condition.icon,
-                                        size: largeIconSize,
-                                        color: _condition.isValid
-                                            ? null
-                                            : _condition.isExpired
-                                                ? outOfDateColor
-                                                : errorColor,
-                                      ),
-                                  ],
-                                ),
-                                if (_forecasts != null)
+                            height: MediaQuery.of(context).size.height -
+                                Scaffold.of(context).appBarMaxHeight -
+                                _detailsPanelHeight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      for (Forecast forecast in _forecasts)
-                                        _ForecastTile(
-                                          icon: forecast.icon,
-                                          label: forecast.type
-                                              .toString()
-                                              .asEnumLabel()
-                                              .capitalize(),
-                                          color: forecast.isValid
+                                      if (_temperature != null)
+                                        Text(
+                                          '${_temperature.value.round()}°',
+                                          style: _temperature.isValid
+                                              ? largeText
+                                              : _temperature.isExpired
+                                                  ? largeTextWithOutOfDate
+                                                  : largeTextWithError,
+                                        ),
+                                      if (_condition != null)
+                                        BoxedIcon(
+                                          _condition.icon,
+                                          size: largeIconSize,
+                                          color: _condition.isValid
                                               ? null
-                                              : forecast.isExpired
+                                              : _condition.isExpired
                                                   ? outOfDateColor
                                                   : errorColor,
                                         ),
                                     ],
                                   ),
-                              ],
+                                  if (_forecasts != null)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        for (Forecast forecast in _forecasts)
+                                          _ForecastTile(
+                                            icon: forecast.icon,
+                                            label: forecast.type
+                                                .toString()
+                                                .asEnumLabel()
+                                                .capitalize(),
+                                            color: forecast.isValid
+                                                ? null
+                                                : forecast.isExpired
+                                                    ? outOfDateColor
+                                                    : errorColor,
+                                          ),
+                                      ],
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -421,7 +437,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                       : errorColor,
                                 ),
                                 Text(
-                                  '${_windDirection.value.toString()}${_windDirection.unit}',
+                                  '${_windDirection.value}${_windDirection.unit}',
                                   style: _windDirection.isInBounds
                                       ? smallText
                                       : smallTextWithError,
@@ -469,7 +485,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                                   color: _pm2_5.isInBounds ? null : errorColor,
                                 ),
                                 Text(
-                                  '${_pm2_5.value.toString()}${_pm2_5.unit}',
+                                  '${_pm2_5.value}${_pm2_5.unit}',
                                   style: _pm2_5.isInBounds
                                       ? smallText
                                       : smallTextWithError,
@@ -625,7 +641,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   /// Do not invoke this method directly. Use
   /// _refreshIndicatorKey.currentState.show() instead.
   Future<void> _fetchData() async {
-    setState(() => _fetchTimestamp = DateTime.now());
+    setState(() {
+      _mainInfoOpacity = 0.0;
+      _fetchTimestamp = DateTime.now();
+    });
 
     Geoposition userLocation = await Geolocation().getCurrentLocation();
     if (userLocation == null) {
@@ -657,6 +676,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       _pm2_5 = Weather().getNearestPM2_5Reading();
       _condition = Weather().getNearestCondition();
       _forecasts = Weather().getNearest24HourForecast();
+      _mainInfoOpacity = 1.0;
     });
     if (_temperature == null ||
         _rainfall == null ||

@@ -14,7 +14,15 @@ Tap the bottom panel to reveal weather details.
 
 [Weather Icons](https://erikflowers.github.io/weather-icons/) licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL).
 
-This app is written using [Flutter SDK](https://flutter.dev) 1.17.3 and includes the following third-party libraries:
+[Unsplash](https://unsplash.com) photos licensed under [Unsplash License](https://unsplash.com/license) from contributors:
+- [David Moum](https://unsplash.com/@davidmoum?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+- [Eric Muhr](https://unsplash.com/@ericmuhr?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+- [Fabio Neo Amato](https://unsplash.com/@cloudsdealer?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+- [Guillaume M.](https://unsplash.com/@guimgn?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+- [Jason Briscoe](https://unsplash.com/@jsnbrsc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+- [Peyman Farmani](https://unsplash.com/@peymanfarmani?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
+This app is written using [Flutter SDK](https://flutter.dev) 1.17.4 and includes the following third-party libraries:
 - [flutter_markdown](https://pub.dev/packages/flutter_markdown) ^0.4.1
 - [geolocator](https://pub.dev/packages/geolocator) ^5.3.1
 - [http](https://pub.dev/packages/http) ^0.12.1

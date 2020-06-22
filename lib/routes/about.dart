@@ -70,8 +70,8 @@ This app is written using [Flutter SDK](https://flutter.dev) 1.17.4 and includes
             child: ConstrainedBox(
               constraints: BoxConstraints.expand(
                 width: MediaQuery.of(context).size.width,
-                // Force canvas to take up 60% of available space.
-                height: MediaQuery.of(context).size.height * 0.6,
+                // Force canvas to take up 70% of available space.
+                height: MediaQuery.of(context).size.height * 0.7,
               ),
               child: Markdown(
                 data: _data,

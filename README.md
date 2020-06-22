@@ -27,5 +27,6 @@ This app is written using [Flutter SDK](https://flutter.dev) 1.17.4 and includes
 - [geolocator](https://pub.dev/packages/geolocator) ^5.3.1
 - [http](https://pub.dev/packages/http) ^0.12.1
 - [intl](https://pub.dev/packages/intl) ^0.16.1
+- [rubber](https://pub.dev/packages/rubber) ^0.4.0
 - [url_launcher](https://pub.dev/packages/url_launcher) ^5.4.10
 - [weather_icons](https://pub.dev/packages/weather_icons) ^2.0.1

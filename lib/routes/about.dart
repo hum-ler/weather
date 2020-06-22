@@ -53,18 +53,45 @@ This app is written using [Flutter SDK](https://flutter.dev) 1.17.4 and includes
       body: Column(
         children: <Widget>[
           Expanded(
-            child: Image.asset('assets/images/logo.png'),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(
-              _version,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .apply(color: Colors.white),
-            ),
+            child: MediaQuery.of(context).orientation == Orientation.portrait
+                ? Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Image.asset('assets/images/logo.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Text(
+                          _version,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              .apply(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: <Widget>[
+                        Image.asset('assets/images/logo.png'),
+                        SizedBox(width: 8.0),
+                        Text(
+                          _version,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              .apply(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
           Container(
             color: Theme.of(context).canvasColor,

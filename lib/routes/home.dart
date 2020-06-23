@@ -600,9 +600,8 @@ class _HomeState extends State<Home>
     // layer is collapsed) to 0.5 (expanded). The latter is 0.5 because we are
     // only doing 180°. In other words, if we want to use the same animation to
     // scale other property, multiple its value by 2 first.
-
-    // Hardcoding Scaffold.appBarMaxHeight (80.0) for now.
-    double canvasHeight = MediaQuery.of(context).size.height - 80.0;
+    double canvasHeight = MediaQuery.of(context).size.height -
+        _scaffoldKey.currentState.appBarMaxHeight;
     double lowerBound = _detailsLayerHandleSize / canvasHeight;
     double upperBound = _detailsLayerHeight / canvasHeight;
     double turnsFactor = 0.5 / (upperBound - lowerBound);

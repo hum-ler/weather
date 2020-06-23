@@ -74,13 +74,19 @@ class _HomeState extends State<Home>
   /// The animation controller for the bottom sheet.
   RubberAnimationController _animationController;
 
+  /// The animation used by the rotating icon.
+  Animation _animation;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance
       ..addObserver(this)
-      ..addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
+      ..addPostFrameCallback((_) {
+        _initAnimation();
+        _refreshIndicatorKey.currentState.show();
+      });
 
     _animationController = RubberAnimationController(
       vsync: this,
@@ -92,6 +98,12 @@ class _HomeState extends State<Home>
         ratio: DampingRatio.HIGH_BOUNCY,
       ),
       duration: const Duration(milliseconds: 300),
+    );
+
+    // Set up a dummy animation for now so that build() wouldn't crash.
+    _animation = CurvedAnimation(
+      curve: Curves.linear,
+      parent: _animationController,
     );
 
     _summaryLayerOpacity = 0.0;
@@ -244,9 +256,12 @@ class _HomeState extends State<Home>
           height: _detailsLayerHandleSize,
           padding: const EdgeInsets.only(bottom: 8.0),
           alignment: Alignment.bottomCenter,
-          child: Icon(
-            Icons.drag_handle,
-            size: 32.0,
+          child: RotationTransition(
+            turns: _animation,
+            child: Icon(
+              Icons.keyboard_arrow_up,
+              size: 32.0,
+            ),
           ),
         ),
         Container(
@@ -577,6 +592,21 @@ class _HomeState extends State<Home>
         ),
       ],
     );
+  }
+
+  /// Sets up [_animation] with the correct scale.
+  void _initAnimation() {
+    // Hardcoding Scaffold.appBarMaxHeight (80.0) for now.
+    double canvasHeight = MediaQuery.of(context).size.height - 80.0;
+    double lowerBound = _detailsLayerHandleSize / canvasHeight;
+    double upperBound = _detailsLayerHeight / canvasHeight;
+    // 0.5 -- because we are only doing 180°.
+    double turnsFactor = 0.5 / (upperBound - lowerBound);
+
+    _animation = Tween<double>(
+      begin: -lowerBound * turnsFactor,
+      end: (1 - lowerBound) * turnsFactor,
+    ).animate(_animationController);
   }
 
   /// Gets the name of the background image asset.

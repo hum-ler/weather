@@ -74,13 +74,26 @@ class _HomeState extends State<Home>
   /// The animation controller for the bottom sheet.
   RubberAnimationController _animationController;
 
+  Animation _animation;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance
       ..addObserver(this)
-      ..addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
+      ..addPostFrameCallback((_) {
+        double canvasHeight = MediaQuery.of(context).size.height - 80.0;
+        double lowerBound = _detailsLayerHandleSize / canvasHeight;
+        double upperBound = _detailsLayerHeight / canvasHeight;
+        double rotationFactor = 1 / (upperBound - lowerBound);
+
+        _animation = Tween<double>(
+          begin: -lowerBound * rotationFactor / 2,
+          end: (1 - lowerBound) * rotationFactor / 2,
+        ).animate(_animationController);
+        _refreshIndicatorKey.currentState.show();
+      });
 
     _animationController = RubberAnimationController(
       vsync: this,
@@ -92,6 +105,27 @@ class _HomeState extends State<Home>
         ratio: DampingRatio.HIGH_BOUNCY,
       ),
       duration: const Duration(milliseconds: 300),
+    );
+
+    // 0.15210176991150443 = 100.0 / (737.454545 - 80.0)
+    // 0.425883329216142 = 280.0 / (737.454545 - 80.0)
+
+    // 737.4545454545455
+    // 80.0
+
+    // double canvasHeight = MediaQuery.of(context).size.height - 80.0;
+    // double lowerBound = _detailsLayerHandleSize / canvasHeight;
+    // double upperBound = _detailsLayerHeight / canvasHeight;
+    // double rotationFactor = 1 / (upperBound - lowerBound);
+
+    // _animation = Tween<double>(
+    //   begin: -lowerBound * rotationFactor / 2,
+    //   end: (1 - lowerBound) * rotationFactor / 2,
+    // ).animate(_animationController);
+
+    _animation = CurvedAnimation(
+      curve: Curves.linear,
+      parent: _animationController,
     );
 
     _summaryLayerOpacity = 0.0;
@@ -244,9 +278,12 @@ class _HomeState extends State<Home>
           height: _detailsLayerHandleSize,
           padding: const EdgeInsets.only(bottom: 8.0),
           alignment: Alignment.bottomCenter,
-          child: Icon(
-            Icons.drag_handle,
-            size: 32.0,
+          child: RotationTransition(
+            turns: _animation,
+            child: Icon(
+              Icons.keyboard_arrow_up,
+              size: 32.0,
+            ),
           ),
         ),
         Container(

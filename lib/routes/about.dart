@@ -15,9 +15,9 @@ class About extends StatelessWidget {
   final String _data = r'''
 ## Usage
 
-Pull to refresh data.
+Pull downwards to refresh data.
 
-Tap the bottom panel to reveal weather details.
+Drag the arrow at the bottom to reveal weather details.
 
 ## Credits
 

@@ -74,6 +74,7 @@ class _HomeState extends State<Home>
   /// The animation controller for the bottom sheet.
   RubberAnimationController _animationController;
 
+  /// The animation used by the rotating icon.
   Animation _animation;
 
   @override
@@ -83,15 +84,7 @@ class _HomeState extends State<Home>
     WidgetsBinding.instance
       ..addObserver(this)
       ..addPostFrameCallback((_) {
-        double canvasHeight = MediaQuery.of(context).size.height - 80.0;
-        double lowerBound = _detailsLayerHandleSize / canvasHeight;
-        double upperBound = _detailsLayerHeight / canvasHeight;
-        double rotationFactor = 1 / (upperBound - lowerBound);
-
-        _animation = Tween<double>(
-          begin: -lowerBound * rotationFactor / 2,
-          end: (1 - lowerBound) * rotationFactor / 2,
-        ).animate(_animationController);
+        _initAnimation();
         _refreshIndicatorKey.currentState.show();
       });
 
@@ -107,22 +100,7 @@ class _HomeState extends State<Home>
       duration: const Duration(milliseconds: 300),
     );
 
-    // 0.15210176991150443 = 100.0 / (737.454545 - 80.0)
-    // 0.425883329216142 = 280.0 / (737.454545 - 80.0)
-
-    // 737.4545454545455
-    // 80.0
-
-    // double canvasHeight = MediaQuery.of(context).size.height - 80.0;
-    // double lowerBound = _detailsLayerHandleSize / canvasHeight;
-    // double upperBound = _detailsLayerHeight / canvasHeight;
-    // double rotationFactor = 1 / (upperBound - lowerBound);
-
-    // _animation = Tween<double>(
-    //   begin: -lowerBound * rotationFactor / 2,
-    //   end: (1 - lowerBound) * rotationFactor / 2,
-    // ).animate(_animationController);
-
+    // Set up a dummy animation for now so that build() wouldn't crash.
     _animation = CurvedAnimation(
       curve: Curves.linear,
       parent: _animationController,
@@ -614,6 +592,21 @@ class _HomeState extends State<Home>
         ),
       ],
     );
+  }
+
+  /// Sets up [_animation] with the correct scale.
+  void _initAnimation() {
+    // Hardcoding Scaffold.appBarMaxHeight (80.0) for now.
+    double canvasHeight = MediaQuery.of(context).size.height - 80.0;
+    double lowerBound = _detailsLayerHandleSize / canvasHeight;
+    double upperBound = _detailsLayerHeight / canvasHeight;
+    // 0.5 -- because we are only doing 180°.
+    double turnsFactor = 0.5 / (upperBound - lowerBound);
+
+    _animation = Tween<double>(
+      begin: -lowerBound * turnsFactor,
+      end: (1 - lowerBound) * turnsFactor,
+    ).animate(_animationController);
   }
 
   /// Gets the name of the background image asset.

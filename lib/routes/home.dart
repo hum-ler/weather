@@ -74,7 +74,7 @@ class _HomeState extends State<Home>
   /// The animation controller for the bottom sheet.
   RubberAnimationController _animationController;
 
-  /// The animation used by the rotating icon.
+  /// The animation used by the details layer handle icon.
   Animation _animation;
 
   @override
@@ -146,17 +146,17 @@ class _HomeState extends State<Home>
         ],
       ),
       body: RubberBottomSheet(
-        lowerLayer: _getSummaryLayer(),
-        upperLayer: _getDetailsLayer(),
+        lowerLayer: _buildSummaryLayer(),
+        upperLayer: _buildDetailsLayer(),
         animationController: _animationController,
       ),
     );
   }
 
-  /// Gets the summary layer.
+  /// Builds the summary layer.
   ///
   /// Displays the main info with the background image.
-  Widget _getSummaryLayer() {
+  Widget _buildSummaryLayer() {
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () => _fetchData(),
@@ -244,10 +244,10 @@ class _HomeState extends State<Home>
     );
   }
 
-  /// Gets the details layer.
+  /// Builds the details layer.
   ///
   /// Goes into the bottom sheet.
-  Widget _getDetailsLayer() {
+  Widget _buildDetailsLayer() {
     return ListView(
       padding: const EdgeInsets.all(8.0),
       physics: NeverScrollableScrollPhysics(),
@@ -596,11 +596,15 @@ class _HomeState extends State<Home>
 
   /// Sets up [_animation] with the correct scale.
   void _initAnimation() {
+    // Setting it up such that when turns ranges from 0.0 (when the details
+    // layer is collapsed) to 0.5 (expanded). The latter is 0.5 because we are
+    // only doing 180°. In other words, if we want to use the same animation to
+    // scale other property, multiple its value by 2 first.
+
     // Hardcoding Scaffold.appBarMaxHeight (80.0) for now.
     double canvasHeight = MediaQuery.of(context).size.height - 80.0;
     double lowerBound = _detailsLayerHandleSize / canvasHeight;
     double upperBound = _detailsLayerHeight / canvasHeight;
-    // 0.5 -- because we are only doing 180°.
     double turnsFactor = 0.5 / (upperBound - lowerBound);
 
     _animation = Tween<double>(

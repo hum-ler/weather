@@ -203,12 +203,6 @@ class Weather {
 
     if (timestamp == null) return null;
 
-    // Perform a fetch only if we are over the validity period.
-    if (_readingTypeExpiry[type] != null &&
-        timestamp.isBefore(_readingTypeExpiry[type])) {
-      return null;
-    }
-
     String fullUrl =
         '$url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
@@ -258,12 +252,6 @@ class Weather {
   }) async {
     if (timestamp == null) return null;
 
-    // Perform a fetch only if we are over the validity period.
-    if (_readingTypeExpiry[ReadingType.pm2_5] != null &&
-        timestamp.isBefore(_readingTypeExpiry[ReadingType.pm2_5])) {
-      return null;
-    }
-
     String fullUrl =
         '$_pm2_5Url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
@@ -309,12 +297,6 @@ class Weather {
   }) async {
     if (timestamp == null) return null;
 
-    // Perform a fetch only if we are over the validity period.
-    if (_x2HourForecastExpiry != null &&
-        timestamp.isBefore(_x2HourForecastExpiry)) {
-      return null;
-    }
-
     String fullUrl =
         '$_x2HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
@@ -357,12 +339,6 @@ class Weather {
     @required Geoposition userLocation,
   }) async {
     if (timestamp == null) return null;
-
-    // Perform a fetch only if we are over the validity period.
-    if (_x24HourForecastExpiry != null &&
-        timestamp.isBefore(_x24HourForecastExpiry)) {
-      return null;
-    }
 
     String fullUrl =
         '$_x24HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';

@@ -171,7 +171,7 @@ class Weather {
   ///
   /// Call [fetchReadings()] before calling this method.
   Forecast getNearest2HourForecast() {
-    if (_x2HourForecasts.isEmpty) return null;
+    if (_x2HourForecasts == null || _x2HourForecasts.isEmpty) return null;
 
     return _x2HourForecasts.reduce((v, e) => v.distance < e.distance ? v : e);
   }
@@ -182,7 +182,7 @@ class Weather {
   ///
   /// The items in the returned list are arranged in chronological order.
   List<Forecast> getNearest24HourForecast() {
-    if (_x24HourForecasts.isEmpty) return null;
+    if (_x24HourForecasts == null || _x24HourForecasts.isEmpty) return null;
 
     return _x24HourForecasts
         .reduce((v, e) => v.first.distance < e.first.distance ? v : e);
@@ -211,8 +211,13 @@ class Weather {
 
     if (data['api_info']['status'] == 'healthy') {
       // Server-side timestamp.
-      DateTime creation =
-          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+      DateTime creation;
+      try {
+        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
+      } catch (exception) {
+        print(exception);
+        return null;
+      }
 
       List<dynamic> stations = data['metadata']['stations'];
 
@@ -260,8 +265,13 @@ class Weather {
 
     if (data['api_info']['status'] == 'healthy') {
       // Server-side timestamp.
-      DateTime creation =
-          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+      DateTime creation;
+      try {
+        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
+      } catch (exception) {
+        print(exception);
+        return null;
+      }
 
       List<dynamic> regions = data['region_metadata'];
       dynamic readings = data['items'][0]['readings']['pm25_one_hourly'];
@@ -305,8 +315,13 @@ class Weather {
 
     if (data['api_info']['status'] == 'healthy') {
       // Server-side timestamp.
-      DateTime creation =
-          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+      DateTime creation;
+      try {
+        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
+      } catch (exception) {
+        print(exception);
+        return null;
+      }
 
       List<dynamic> areas = data['area_metadata'];
 
@@ -348,8 +363,13 @@ class Weather {
 
     if (data['api_info']['status'] == 'healthy') {
       // Server-side timestamp.
-      DateTime creation =
-          DateTime.tryParse(data['items'][0]['timestamp']).toLocal();
+      DateTime creation;
+      try {
+        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
+      } catch (exception) {
+        print(exception);
+        return null;
+      }
 
       // Prepare 5 lists to return, each representing one reference region.
       Map<Provider, List<Forecast>> regionLists = {

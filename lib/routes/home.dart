@@ -10,7 +10,7 @@ import '../models/reading.dart';
 import '../routes/about.dart';
 import '../services/geolocation.dart';
 import '../services/weather.dart';
-import '../themes/styles.dart';
+import '../themes/style.dart';
 import '../utils/date_time_ext.dart';
 import '../utils/math_utils.dart';
 import '../utils/string_ext.dart';
@@ -157,6 +157,8 @@ class _HomeState extends State<Home>
   ///
   /// Displays the main info with the background image.
   Widget _buildSummaryLayer() {
+    Style style = Style(Theme.of(context).brightness);
+
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () => _fetchData(),
@@ -195,20 +197,16 @@ class _HomeState extends State<Home>
                             Text(
                               '${_temperature.value.round()}°',
                               style: _temperature.isValid
-                                  ? largeText
-                                  : _temperature.isExpired
-                                      ? largeTextWithOutOfDate
-                                      : largeTextWithError,
+                                  ? style.largeText
+                                  : style.largeTextWithError,
                             ),
                           if (_condition != null)
                             BoxedIcon(
                               _condition.icon,
-                              size: largeIconSize,
+                              size: style.largeIconSize,
                               color: _condition.isValid
                                   ? null
-                                  : _condition.isExpired
-                                      ? outOfDateColor
-                                      : errorColor,
+                                  : style.largeIconWithError,
                             ),
                         ],
                       ),
@@ -220,15 +218,15 @@ class _HomeState extends State<Home>
                             for (Forecast forecast in _forecasts)
                               _ForecastTile(
                                 icon: forecast.icon,
+                                size: style.mediumIconSize,
                                 label: forecast.type
                                     .toString()
                                     .asEnumLabel()
                                     .capitalize(),
+                                textStyle: style.mediumText,
                                 color: forecast.isValid
                                     ? null
-                                    : forecast.isExpired
-                                        ? outOfDateColor
-                                        : errorColor,
+                                    : style.mediumIconWithError,
                               ),
                           ],
                         ),
@@ -248,6 +246,8 @@ class _HomeState extends State<Home>
   ///
   /// Goes into the bottom sheet.
   Widget _buildDetailsLayer() {
+    Style style = Style(Theme.of(context).brightness);
+
     return ListView(
       padding: const EdgeInsets.all(8.0),
       physics: NeverScrollableScrollPhysics(),
@@ -280,36 +280,44 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     BoxedIcon(
                       WeatherIcons.thermometer,
-                      size: smallIconSize,
-                      color: _temperature.isInBounds ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _temperature.isInBounds
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
                       '${_temperature.value.toStringAsFixed(1)}${_temperature.unit}',
                       style: _temperature.isInBounds
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
-                      color: _temperature.isNearby ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _temperature.isNearby
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
-                      '${_temperature.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_temperature.distance.toStringAsFixed(1)}${_temperature.distanceUnit})',
+                      '${_temperature.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_temperature.distance.toStringAsFixed(1)}${_temperature.distanceUnit})',
                       style: _temperature.isNearby
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _temperature.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color: _temperature.isExpired
+                          ? style.smallIconWithError
+                          : null,
                     ),
                     Text(
-                      _temperature.creation.format(dateTimePattern),
+                      _temperature.creation.format(style.dateTimePattern),
                       style: _temperature.isExpired
-                          ? smallTextWithError
-                          : smallText,
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -319,33 +327,42 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     BoxedIcon(
                       WeatherIcons.umbrella,
-                      size: smallIconSize,
-                      color: _rainfall.isInBounds ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _rainfall.isInBounds
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
                       '${_rainfall.value.toStringAsFixed(1)}${_rainfall.unit}',
-                      style:
-                          _rainfall.isInBounds ? smallText : smallTextWithError,
+                      style: _rainfall.isInBounds
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
-                      color: _rainfall.isNearby ? null : errorColor,
+                      size: style.smallIconSize,
+                      color:
+                          _rainfall.isNearby ? null : style.smallIconWithError,
                     ),
                     Text(
-                      '${_rainfall.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
-                      style:
-                          _rainfall.isNearby ? smallText : smallTextWithError,
+                      '${_rainfall.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
+                      style: _rainfall.isNearby
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _rainfall.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color:
+                          _rainfall.isExpired ? style.smallIconWithError : null,
                     ),
                     Text(
-                      _rainfall.creation.format(dateTimePattern),
-                      style:
-                          _rainfall.isExpired ? smallTextWithError : smallText,
+                      _rainfall.creation.format(style.dateTimePattern),
+                      style: _rainfall.isExpired
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -355,33 +372,42 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     BoxedIcon(
                       WeatherIcons.raindrop,
-                      size: smallIconSize,
-                      color: _humidity.isInBounds ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _humidity.isInBounds
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
                       '${_humidity.value.toStringAsFixed(1)}${_humidity.unit}',
-                      style:
-                          _humidity.isInBounds ? smallText : smallTextWithError,
+                      style: _humidity.isInBounds
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
-                      color: _humidity.isNearby ? null : errorColor,
+                      size: style.smallIconSize,
+                      color:
+                          _humidity.isNearby ? null : style.smallIconWithError,
                     ),
                     Text(
-                      '${_humidity.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_humidity.distance.toStringAsFixed(1)}${_humidity.distanceUnit})',
-                      style:
-                          _humidity.isNearby ? smallText : smallTextWithError,
+                      '${_humidity.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_humidity.distance.toStringAsFixed(1)}${_humidity.distanceUnit})',
+                      style: _humidity.isNearby
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _humidity.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color:
+                          _humidity.isExpired ? style.smallIconWithError : null,
                     ),
                     Text(
-                      _humidity.creation.format(dateTimePattern),
-                      style:
-                          _humidity.isExpired ? smallTextWithError : smallText,
+                      _humidity.creation.format(style.dateTimePattern),
+                      style: _humidity.isExpired
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -391,41 +417,48 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     BoxedIcon(
                       WeatherIcons.strong_wind,
-                      size: smallIconSize,
-                      color: _windSpeed.isInBounds ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _windSpeed.isInBounds
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
                       '${_windSpeed.value.toStringAsFixed(1)}${_windSpeed.unit}',
                       style: _windSpeed.isInBounds
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
+                      size: style.smallIconSize,
                       color: _windSpeed.isNearby &&
                               _windSpeed.provider.id ==
                                   _windDirection?.provider?.id
                           ? null
-                          : errorColor,
+                          : style.smallIconWithError,
                     ),
                     Text(
-                      '${_windSpeed.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_windSpeed.distance.toStringAsFixed(1)}${_windSpeed.distanceUnit})',
+                      '${_windSpeed.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windSpeed.distance.toStringAsFixed(1)}${_windSpeed.distanceUnit})',
                       style: _windSpeed.isNearby &&
                               _windSpeed.provider.id ==
                                   _windDirection?.provider?.id
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _windSpeed.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color: _windSpeed.isExpired
+                          ? style.smallIconWithError
+                          : null,
                     ),
                     Text(
-                      _windSpeed.creation.format(dateTimePattern),
-                      style:
-                          _windSpeed.isExpired ? smallTextWithError : smallText,
+                      _windSpeed.creation.format(style.dateTimePattern),
+                      style: _windSpeed.isExpired
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -435,44 +468,51 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     _BoxedIcon(
                       icon: Icons.navigation,
+                      size: style.smallIconSize,
                       rotation: degreesToRadians(
                         _windDirection.value.toDouble(),
                       ),
-                      color: _windDirection.isInBounds ? null : errorColor,
+                      color: _windDirection.isInBounds
+                          ? null
+                          : style.smallIconWithError,
                     ),
                     Text(
                       '${_windDirection.value}${_windDirection.unit}',
                       style: _windDirection.isInBounds
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
+                      size: style.smallIconSize,
                       color: _windDirection.isNearby &&
                               _windDirection.provider.id ==
                                   _windSpeed?.provider?.id
                           ? null
-                          : errorColor,
+                          : style.smallIconWithError,
                     ),
                     Text(
-                      '${_windDirection.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_windDirection.distance.toStringAsFixed(1)}${_windDirection.distanceUnit})',
+                      '${_windDirection.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windDirection.distance.toStringAsFixed(1)}${_windDirection.distanceUnit})',
                       style: _windDirection.isNearby &&
                               _windDirection.provider.id ==
                                   _windSpeed?.provider?.id
-                          ? smallText
-                          : smallTextWithError,
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _windDirection.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color: _windDirection.isExpired
+                          ? style.smallIconWithError
+                          : null,
                     ),
                     Text(
-                      _windDirection.creation.format(dateTimePattern),
+                      _windDirection.creation.format(style.dateTimePattern),
                       style: _windDirection.isExpired
-                          ? smallTextWithError
-                          : smallText,
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -482,30 +522,39 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     _BoxedIcon(
                       icon: Icons.grain,
-                      size: smallIconSize,
-                      color: _pm2_5.isInBounds ? null : errorColor,
+                      size: style.smallIconSize,
+                      color:
+                          _pm2_5.isInBounds ? null : style.smallIconWithError,
                     ),
                     Text(
                       '${_pm2_5.value}${_pm2_5.unit}',
-                      style: _pm2_5.isInBounds ? smallText : smallTextWithError,
+                      style: _pm2_5.isInBounds
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
-                      color: _pm2_5.isNearby ? null : errorColor,
+                      size: style.smallIconSize,
+                      color: _pm2_5.isNearby ? null : style.smallIconWithError,
                     ),
                     Text(
                       '${_pm2_5.provider.name.capitalize()} (${_pm2_5.distance.toStringAsFixed(1)}${_pm2_5.distanceUnit})',
-                      style: _pm2_5.isNearby ? smallText : smallTextWithError,
+                      style: _pm2_5.isNearby
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _pm2_5.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color: _pm2_5.isExpired ? style.smallIconWithError : null,
                     ),
                     Text(
-                      _pm2_5.creation.format(dateTimePattern),
-                      style: _pm2_5.isExpired ? smallTextWithError : smallText,
+                      _pm2_5.creation.format(style.dateTimePattern),
+                      style: _pm2_5.isExpired
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -515,38 +564,46 @@ class _HomeState extends State<Home>
                   children: <Widget>[
                     _BoxedIcon(
                       icon: Icons.language,
+                      size: style.smallIconSize,
                       color: _condition.icon == WeatherIcons.na
-                          ? errorColor
+                          ? style.smallIconWithError
                           : null,
                     ),
                     Text(
                       _condition.condition.truncate(
-                        maxConditionLength,
+                        style.maxConditionLength,
                         ellipsis: '…',
                       ),
                       style: _condition.icon == WeatherIcons.na
-                          ? smallTextWithError
-                          : smallText,
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.place,
-                      color: _condition.isNearby ? null : errorColor,
+                      size: style.smallIconSize,
+                      color:
+                          _condition.isNearby ? null : style.smallIconWithError,
                     ),
                     Text(
-                      '${_condition.provider.name.truncate(maxProviderNameLength, ellipsis: "…")} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
-                      style:
-                          _condition.isNearby ? smallText : smallTextWithError,
+                      '${_condition.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
+                      style: _condition.isNearby
+                          ? style.smallText
+                          : style.smallTextWithError,
                     ),
                     SizedBox(width: 4.0),
                     _BoxedIcon(
                       icon: Icons.schedule,
-                      color: _condition.isExpired ? errorColor : null,
+                      size: style.smallIconSize,
+                      color: _condition.isExpired
+                          ? style.smallIconWithError
+                          : null,
                     ),
                     Text(
-                      _condition.creation.format(dateTimePattern),
-                      style:
-                          _condition.isExpired ? smallTextWithError : smallText,
+                      _condition.creation.format(style.dateTimePattern),
+                      style: _condition.isExpired
+                          ? style.smallTextWithError
+                          : style.smallText,
                     ),
                   ],
                 ),
@@ -554,36 +611,43 @@ class _HomeState extends State<Home>
                 for (Forecast forecast in _forecasts)
                   Row(
                     children: <Widget>[
-                      _BoxedIcon(icon: Icons.schedule),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                      ),
                       Text(
                         forecast.type.toString().asEnumLabel().capitalize(),
-                        style: smallText,
+                        style: style.smallText,
                       ),
                       SizedBox(width: 4.0),
                       _BoxedIcon(
                         icon: Icons.language,
+                        size: style.smallIconSize,
                         color: forecast.icon == WeatherIcons.na
-                            ? errorColor
+                            ? style.smallIconWithError
                             : null,
                       ),
                       Text(
                         forecast.condition.truncate(
-                          maxConditionLength,
+                          style.maxConditionLength,
                           ellipsis: '…',
                         ),
                         style: forecast.icon == WeatherIcons.na
-                            ? smallTextWithError
-                            : smallText,
+                            ? style.smallTextWithError
+                            : style.smallText,
                       ),
                       SizedBox(width: 4.0),
                       _BoxedIcon(
                         icon: Icons.place,
-                        color: forecast.isNearby ? null : errorColor,
+                        size: style.smallIconSize,
+                        color:
+                            forecast.isNearby ? null : style.smallIconWithError,
                       ),
                       Text(
                         '${forecast.provider.name.capitalize()} (${forecast.distance.toStringAsFixed(1)}${forecast.distanceUnit})',
-                        style:
-                            forecast.isNearby ? smallText : smallTextWithError,
+                        style: forecast.isNearby
+                            ? style.smallText
+                            : style.smallTextWithError,
                       ),
                     ],
                   ),
@@ -700,16 +764,27 @@ class _HomeState extends State<Home>
 
 /// Displays a [Forecast] with an icon and label.
 class _ForecastTile extends StatelessWidget {
+  /// The icon to use.
   final IconData icon;
 
+  /// The text label below the icon.
   final String label;
 
+  /// The size of the icon.
+  final double size;
+
+  /// The color of the icon.
   final Color color;
+
+  /// The style of the label.
+  final TextStyle textStyle;
 
   const _ForecastTile({
     @required this.icon,
     @required this.label,
+    @required this.size,
     this.color,
+    @required this.textStyle,
     Key key,
   }) : super(key: key);
 
@@ -722,14 +797,13 @@ class _ForecastTile extends StatelessWidget {
         children: <Widget>[
           BoxedIcon(
             icon,
-            size: mediumIconSize,
+            size: size,
             color: color,
           ),
           SizedBox(height: 4.0),
           Text(
             label,
-            style:
-                color != null ? mediumText.copyWith(color: color) : mediumText,
+            style: color != null ? textStyle.copyWith(color: color) : textStyle,
           ),
         ],
       ),
@@ -750,7 +824,7 @@ class _BoxedIcon extends StatelessWidget {
 
   _BoxedIcon({
     @required this.icon,
-    this.size = smallIconSize,
+    @required this.size,
     this.rotation,
     this.color,
     Key key,

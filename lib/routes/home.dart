@@ -64,7 +64,7 @@ class _HomeState extends State<Home>
   final double _detailsLayerHandleSize = 100.0;
 
   /// The height of the details layer when opened.
-  final double _detailsLayerHeight = 280.0;
+  final double _detailsLayerHeight = 286.0;
 
   /// The opacity of the summary layer.
   ///

@@ -79,6 +79,7 @@ class Condition {
     'Partly Cloudy': WeatherIcons.cloud,
     'Partly Cloudy (Day)': WeatherIcons.day_sunny_overcast,
     'Partly Cloudy (Night)': WeatherIcons.night_alt_partly_cloudy,
+    'Passing Showers': WeatherIcons.showers,
     'Rain': WeatherIcons.rain,
     'Rain (Day)': WeatherIcons.day_rain,
     'Rain (Night)': WeatherIcons.night_alt_rain,

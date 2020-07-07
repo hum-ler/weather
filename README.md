@@ -1,6 +1,6 @@
 # weather
 
-Weather · Right Here · Right Now
+Weather · Right Here · Right Now · 1.0.0+1
 
 ## Usage
 
@@ -14,7 +14,7 @@ Drag the arrow at the bottom to reveal weather details.
 
 [Weather Icons](https://erikflowers.github.io/weather-icons/) licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL).
 
-[Unsplash](https://unsplash.com) photos licensed under [Unsplash License](https://unsplash.com/license) from contributors:
+[Unsplash](https://unsplash.com) photos licensed under [Unsplash License](https://unsplash.com/license) from the following contributors:
 - [David Moum](https://unsplash.com/@davidmoum?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [Eric Muhr](https://unsplash.com/@ericmuhr?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [Fabio Neo Amato](https://unsplash.com/@cloudsdealer?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
@@ -22,11 +22,11 @@ Drag the arrow at the bottom to reveal weather details.
 - [Jason Briscoe](https://unsplash.com/@jsnbrsc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [Peyman Farmani](https://unsplash.com/@peymanfarmani?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 
-This app is written using [Flutter SDK](https://flutter.dev) 1.17.4 and includes the following third-party libraries:
-- [flutter_markdown](https://pub.dev/packages/flutter_markdown) ^0.4.1
-- [geolocator](https://pub.dev/packages/geolocator) ^5.3.1
-- [http](https://pub.dev/packages/http) ^0.12.1
-- [intl](https://pub.dev/packages/intl) ^0.16.1
-- [rubber](https://pub.dev/packages/rubber) ^0.4.0
-- [url_launcher](https://pub.dev/packages/url_launcher) ^5.4.10
-- [weather_icons](https://pub.dev/packages/weather_icons) ^2.0.1
+This app is developed using [Flutter](https://flutter.dev) and includes the following third-party libraries:
+- [flutter_markdown](https://pub.dev/packages/flutter_markdown)
+- [geolocator](https://pub.dev/packages/geolocator)
+- [http](https://pub.dev/packages/http)
+- [intl](https://pub.dev/packages/intl)
+- [rubber](https://pub.dev/packages/rubber)
+- [url_launcher](https://pub.dev/packages/url_launcher)
+- [weather_icons](https://pub.dev/packages/weather_icons)

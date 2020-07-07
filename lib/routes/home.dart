@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rubber/rubber.dart';
 import 'package:weather_icons/weather_icons.dart';
 
+import '../generated/l10n.dart';
 import '../models/condition.dart';
 import '../models/forecast.dart';
 import '../models/geoposition.dart';
@@ -713,9 +714,9 @@ class _HomeState extends State<Home>
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          content: Text('Cannot detect current location.'),
+          content: Text(S.of(context).geolocationError),
           action: SnackBarAction(
-            label: 'RETRY',
+            label: S.of(context).geolocationErrorRetry,
             onPressed: () => _refreshIndicatorKey.currentState.show(),
           ),
         ),
@@ -751,9 +752,9 @@ class _HomeState extends State<Home>
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          content: Text('Cannot load data from weather service.'),
+          content: Text(S.of(context).weatherError),
           action: SnackBarAction(
-            label: 'RETRY',
+            label: S.of(context).geolocationErrorRetry,
             onPressed: () => _refreshIndicatorKey.currentState.show(),
           ),
         ),

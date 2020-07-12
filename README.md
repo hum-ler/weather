@@ -2,6 +2,8 @@
 
 Weather · Right Here · Right Now · 1.0.0+1
 
+Your weather *in Singapore*.
+
 ## Usage
 
 Pull downwards to refresh data.

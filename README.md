@@ -32,3 +32,13 @@ This app is developed using [Flutter](https://flutter.dev) and includes the foll
 - [rubber](https://pub.dev/packages/rubber)
 - [url_launcher](https://pub.dev/packages/url_launcher)
 - [weather_icons](https://pub.dev/packages/weather_icons)
+
+## Privacy policy
+
+This app itself *does not* collect any private data.
+
+The app uses [Data.gov.sg](https://data.gov.sg/) (see relevant [Privacy Statement](https://data.gov.sg/privacy-and-website-terms#privacy)).
+
+## License
+
+This app is released under [The MIT License](https://opensource.org/licenses/MIT).

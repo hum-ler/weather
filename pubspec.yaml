@@ -30,6 +30,7 @@ dependencies:
   geolocator: ^5.3.1
   http: ^0.12.1
   intl: ^0.16.1
+  package_info: ^0.4.1
   rubber: ^0.4.0
   url_launcher: ^5.4.10
   weather_icons: ^2.0.1

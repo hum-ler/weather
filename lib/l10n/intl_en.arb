@@ -1,6 +1,5 @@
 {
   "title": "Weather · Right Here · Right Now",
-  "titleVersion": "Weather · Right Here · Right Now · 1.0.0+1",
   "geolocationError": "Cannot detect current location.",
   "geolocationErrorRetry": "RETRY",
   "weatherError": "Cannot load all data from weather service.",

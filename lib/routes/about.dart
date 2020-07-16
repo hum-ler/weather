@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 import '../generated/l10n.dart';
 
-class About extends StatelessWidget {
+class About extends StatefulWidget {
+  @override
+  _AboutState createState() => _AboutState();
+}
+
+class _AboutState extends State<About> {
+  /// Information about this package.
+  PackageInfo _packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getPackageInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,17 +42,29 @@ class About extends StatelessWidget {
                       children: <Widget>[
                         Expanded(
                           child: FittedBox(
-                            child: BoxedIcon(WeatherIcons.night_alt_cloudy),
+                            child: BoxedIcon(
+                              WeatherIcons.night_alt_cloudy,
+                              color: Theme.of(context).primaryIconTheme.color,
+                            ),
                           ),
                         ),
                         Text(
-                          S.of(context).titleVersion,
+                          S.of(context).title,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
                               .headline6
                               .apply(color: Colors.white),
                         ),
+                        if (_packageInfo != null)
+                          Text(
+                            '${_packageInfo.version}+${_packageInfo.buildNumber}',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6
+                                .apply(color: Colors.white),
+                          ),
                       ],
                     ),
                   ),
@@ -49,17 +77,29 @@ class About extends StatelessWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: <Widget>[
                       FittedBox(
-                        child: BoxedIcon(WeatherIcons.night_alt_cloudy),
+                        child: BoxedIcon(
+                          WeatherIcons.night_alt_cloudy,
+                          color: Theme.of(context).primaryIconTheme.color,
+                        ),
                       ),
                       SizedBox(width: 8.0),
                       Text(
-                        S.of(context).titleVersion,
+                        S.of(context).title,
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme
                             .headline6
                             .apply(color: Colors.white),
                       ),
+                      if (_packageInfo != null)
+                        Text(
+                          ' · ${_packageInfo.version}+${_packageInfo.buildNumber}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              .apply(color: Colors.white),
+                        ),
                     ],
                   ),
                 ),
@@ -78,5 +118,11 @@ class About extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Retrieves information about this package.
+  void _getPackageInfo() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() => _packageInfo = packageInfo);
   }
 }

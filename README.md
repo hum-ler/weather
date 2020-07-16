@@ -1,6 +1,6 @@
 # weather
 
-Weather · Right Here · Right Now · 1.0.0+1
+Weather · Right Here · Right Now
 
 Your weather *in Singapore*.
 

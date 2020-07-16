@@ -9,6 +9,8 @@ class Themes {
     snackBarTheme: ThemeData.dark()
         .snackBarTheme
         .copyWith(actionTextColor: Color(0xFFFF5722)),
+    primaryIconTheme:
+        ThemeData.dark().primaryIconTheme.copyWith(color: Colors.white),
   );
 
   static final ThemeData light = ThemeData.light().copyWith(
@@ -19,5 +21,7 @@ class Themes {
     snackBarTheme: ThemeData.light()
         .snackBarTheme
         .copyWith(actionTextColor: Color(0xFFFF9800)),
+    primaryIconTheme:
+        ThemeData.light().primaryIconTheme.copyWith(color: Colors.white),
   );
 }

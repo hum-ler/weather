@@ -133,7 +133,7 @@ class _HomeState extends State<Home>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Weather · Right Here · Right Now'),
+        title: Text(S.of(context).title),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.help),

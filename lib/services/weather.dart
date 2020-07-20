@@ -5,6 +5,8 @@ import '../models/forecast.dart';
 import '../models/geoposition.dart';
 import '../models/provider.dart';
 import '../models/reading.dart';
+import '../models/json/2_hour_forecast_data.dart';
+import '../models/json/24_hour_forecast_data.dart';
 import '../models/json/pm2_5_data.dart';
 import '../models/json/reading_data.dart';
 import '../utils/date_time_ext.dart';
@@ -303,37 +305,33 @@ class Weather {
     String fullUrl =
         '$_x2HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    dynamic json = await httpGetJsonData(fullUrl);
+    if (json == null) return null;
 
-    if (data['api_info']['status'] == 'healthy') {
+    X2HourForecastData x2HourForecastData = X2HourForecastData.fromJson(json);
+
+    if (x2HourForecastData.apiInfo.status == 'healthy') {
       // Server-side timestamp.
-      DateTime creation;
-      try {
-        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
-      } catch (exception) {
-        print(exception);
-        return null;
-      }
+      if (x2HourForecastData.items.first.timestamp == null) return null;
+      DateTime creation = x2HourForecastData.items.first.timestamp.toLocal();
 
-      List<dynamic> areas = data['area_metadata'];
-
-      return (data['items'][0]['forecasts'] as List).map((e) {
-        dynamic a = areas.firstWhere((a) => a['name'] == e['area']);
+      return x2HourForecastData.items.first.forecasts.map((e) {
+        X2HourForecastDataAreaMetadata area =
+            x2HourForecastData.areaMetadata.firstWhere((a) => a.name == e.area);
 
         return Forecast(
           type: ForecastType.immediate,
           creation: creation,
           provider: Provider.area(
-            id: a['name'],
-            name: a['name'],
+            id: area.name,
+            name: area.name,
             location: Geoposition(
-              latitude: a['label_location']['latitude'],
-              longitude: a['label_location']['longitude'],
+              latitude: area.labelLocation.latitude,
+              longitude: area.labelLocation.longitude,
             ),
           ),
           userLocation: userLocation,
-          condition: e['forecast'],
+          condition: e.forecast,
         );
       });
     }
@@ -351,18 +349,16 @@ class Weather {
     String fullUrl =
         '$_x24HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    dynamic json = await httpGetJsonData(fullUrl);
+    if (json == null) return null;
 
-    if (data['api_info']['status'] == 'healthy') {
+    X24HourForecastData x24HourForecastData =
+        X24HourForecastData.fromJson(json);
+
+    if (x24HourForecastData.apiInfo.status == 'healthy') {
       // Server-side timestamp.
-      DateTime creation;
-      try {
-        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
-      } catch (exception) {
-        print(exception);
-        return null;
-      }
+      if (x24HourForecastData.items.first.timestamp == null) return null;
+      DateTime creation = x24HourForecastData.items.first.timestamp.toLocal();
 
       // Prepare 5 lists to return, each representing one reference region.
       Map<Provider, List<Forecast>> regionLists = {
@@ -373,10 +369,10 @@ class Weather {
         Providers.west: [],
       };
 
-      (data['items'][0]['periods'] as List).forEach((e) {
+      (x24HourForecastData.items.first.periods).forEach((e) {
         ForecastType type;
 
-        DateTime startTime = DateTime.parse(e['time']['start']).toLocal();
+        DateTime startTime = e.time.start.toLocal();
         switch (startTime.hour) {
           case 0:
             type = ForecastType.predawn;
@@ -402,7 +398,7 @@ class Weather {
               creation: creation,
               provider: k,
               userLocation: userLocation,
-              condition: e['regions'][k.name],
+              condition: e.regions[k.name],
             ),
           );
         });

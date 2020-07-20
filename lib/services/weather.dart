@@ -5,6 +5,8 @@ import '../models/forecast.dart';
 import '../models/geoposition.dart';
 import '../models/provider.dart';
 import '../models/reading.dart';
+import '../models/json/pm2_5_data.dart';
+import '../models/json/reading_data.dart';
 import '../utils/date_time_ext.dart';
 import '../utils/http_utils.dart';
 
@@ -206,26 +208,22 @@ class Weather {
     String fullUrl =
         '$url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    dynamic json = await httpGetJsonData(fullUrl);
+    if (json == null) return null;
 
-    if (data['api_info']['status'] == 'healthy') {
+    ReadingData readingData = ReadingData.fromJson(json);
+
+    if (readingData.apiInfo.status == 'healthy') {
       // Server-side timestamp.
-      DateTime creation;
-      try {
-        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
-      } catch (exception) {
-        print(exception);
-        return null;
-      }
+      if (readingData.items.first.timestamp == null) return null;
+      DateTime creation = readingData.items.first.timestamp.toLocal();
 
-      List<dynamic> stations = data['metadata']['stations'];
-
-      return (data['items'][0]['readings'] as List).map((e) {
-        dynamic s = stations.firstWhere((s) => s['id'] == e['station_id']);
+      return readingData.items.first.readings.map((e) {
+        ReadingDataStation station = readingData.metadata.stations
+            .firstWhere((s) => s.id == e.stationId);
 
         // Perform conversion if necessary.
-        num value = e['value'];
+        num value = e.value;
         if (type == ReadingType.windSpeed) {
           value = _knotsToMetersPerSecond(value);
         }
@@ -234,11 +232,11 @@ class Weather {
           type: type,
           creation: creation,
           provider: Provider.station(
-            id: s['id'],
-            name: s['name'],
+            id: station.id,
+            name: station.name,
             location: Geoposition(
-              latitude: s['location']['latitude'],
-              longitude: s['location']['longitude'],
+              latitude: station.location.latitude,
+              longitude: station.location.longitude,
             ),
           ),
           userLocation: userLocation,
@@ -260,39 +258,34 @@ class Weather {
     String fullUrl =
         '$_pm2_5Url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic data = await httpGetJsonData(fullUrl);
-    if (data == null) return null;
+    dynamic json = await httpGetJsonData(fullUrl);
+    if (json == null) return null;
 
-    if (data['api_info']['status'] == 'healthy') {
+    PM25Data pm2_5Data = PM25Data.fromJson(json);
+
+    if (pm2_5Data.apiInfo.status == 'healthy') {
       // Server-side timestamp.
-      DateTime creation;
-      try {
-        creation = DateTime.parse(data['items'][0]['timestamp']).toLocal();
-      } catch (exception) {
-        print(exception);
-        return null;
-      }
-
-      List<dynamic> regions = data['region_metadata'];
-      dynamic readings = data['items'][0]['readings']['pm25_one_hourly'];
+      if (pm2_5Data.items.first.timestamp == null) return null;
+      DateTime creation = pm2_5Data.items.first.timestamp.toLocal();
 
       // Cycle through the 5 known regions.
       return ['central', 'north', 'east', 'south', 'west'].map((e) {
-        dynamic region = regions.firstWhere((r) => r['name'] == e);
+        PM25DataRegionMetadata region =
+            pm2_5Data.regionMetadata.firstWhere((r) => r.name == e);
 
         return Reading(
           type: ReadingType.pm2_5,
           creation: creation,
           provider: Provider.station(
-            id: region['name'],
-            name: region['name'],
+            id: region.name,
+            name: region.name,
             location: Geoposition(
-              latitude: region['label_location']['latitude'],
-              longitude: region['label_location']['longitude'],
+              latitude: region.labelLocation.latitude,
+              longitude: region.labelLocation.longitude,
             ),
           ),
           userLocation: userLocation,
-          value: readings[e],
+          value: pm2_5Data.items.first.readings.pm2_5OneHourly[e],
         );
       });
     }

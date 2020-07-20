@@ -13,6 +13,14 @@ Runs on Android 9 (Pie) or newer.
 
 Requires location and internet access.
 
+## Build
+
+It is strongly recommended to use either [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/). You will need to install the Flutter and Flutter Intl plugins / extensions.
+
+Use the latest [Flutter SDK](https://flutter.dev/docs/get-started/install).
+
+Before compiling, run `flutter packages pub run build_runner build` to generate files used for serialization.
+
 ## Usage
 
 Pull downwards to refresh data.

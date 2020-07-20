@@ -1,16 +1,33 @@
-# weather
+![Logo](doc/images/feature-graphic.png)
 
-Weather · Right Here · Right Now
+# Weather · Right Here · Right Now
 
-Your weather *in Singapore*.
+This app shows the weather at your current location. *Works in Singapore only*.
+
+![Screenshot 1](doc/images/screenshot-1.png)
+![Screenshot 2](doc/images/screenshot-2.png)
+
+## Requirements
+
+Runs on Android 9 (Pie) or newer.
+
+Requires location and internet access.
+
+## Build
+
+It is strongly recommended to use either [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/). You will need to install the Flutter and Flutter Intl plugins / extensions.
+
+Use the latest [Flutter SDK](https://flutter.dev/docs/get-started/install).
+
+Before compiling, run `flutter packages pub run build_runner build` to generate files used for serialization.
 
 ## Usage
 
 Pull downwards to refresh data.
 
-Drag the arrow at the bottom to reveal weather details.
+Use the drawer at the bottom (drag upwards) to reveal weather details.
 
-## Credits
+## Acknowledgement
 
 [Data.gov.sg](https://data.gov.sg/) datasets licensed under [Singapore Open Data License](https://data.gov.sg/open-data-licence). Access via API is subject to [API Terms of Service](https://data.gov.sg/privacy-and-website-terms#api-terms).
 
@@ -25,10 +42,14 @@ Drag the arrow at the bottom to reveal weather details.
 - [Peyman Farmani](https://unsplash.com/@peymanfarmani?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 
 This app is developed using [Flutter](https://flutter.dev) and includes the following third-party libraries:
+- [build_runner](https://pub.dev/packages/build_runner)
 - [flutter_markdown](https://pub.dev/packages/flutter_markdown)
 - [geolocator](https://pub.dev/packages/geolocator)
 - [http](https://pub.dev/packages/http)
 - [intl](https://pub.dev/packages/intl)
+- [json_annotation](https://pub.dev/packages/json_annotation)
+- [json_serializatble](https://pub.dev/packages/json_serializable)
+- [package_info](https://pub.dev/packages/package_info)
 - [rubber](https://pub.dev/packages/rubber)
 - [url_launcher](https://pub.dev/packages/url_launcher)
 - [weather_icons](https://pub.dev/packages/weather_icons)

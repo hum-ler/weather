@@ -6,7 +6,7 @@ extension StringExt on String {
     int maxLength, {
     String ellipsis,
   }) {
-    if (maxLength < 1) {
+    if (maxLength == null || maxLength < 1) {
       throw ArgumentError.value(
         maxLength,
         'maxLength',

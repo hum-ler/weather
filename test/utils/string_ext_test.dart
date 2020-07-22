@@ -48,4 +48,22 @@ void main() {
     expect(shortValue.truncate(4, ellipsis: '..'), equals('ab..'));
     expect(shortValue.truncate(4, ellipsis: '...'), equals('a...'));
   });
+
+  test('asEnumLabel()', () {
+    expect(''.asEnumLabel(), equals(''));
+    expect('a'.asEnumLabel(), equals('a'));
+    expect('aa'.asEnumLabel(), equals('aa'));
+    expect('aa.b'.asEnumLabel(), equals('b'));
+    expect('aa.bb'.asEnumLabel(), equals('bb'));
+    expect('a.b.c'.asEnumLabel(), equals('b.c'));
+  });
+
+  test('capitalize()', () {
+    expect(''.capitalize(), equals(''));
+    expect('a'.capitalize(), equals('A'));
+    expect('A'.capitalize(), equals('A'));
+    expect('ab'.capitalize(), equals('Ab'));
+    expect('abc'.capitalize(), equals('Abc'));
+    expect('.abc'.capitalize(), equals('.abc'));
+  });
 }

@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:kiwi/kiwi.dart';
 
 import '../models/condition.dart';
 import '../models/forecast.dart';
 import '../models/geoposition.dart';
 import '../models/provider.dart';
 import '../models/reading.dart';
-import '../models/json/2_hour_forecast_data.dart';
-import '../models/json/24_hour_forecast_data.dart';
-import '../models/json/pm2_5_data.dart';
-import '../models/json/reading_data.dart';
+import '../source_gen/json_serializable/2_hour_forecast_data.dart';
+import '../source_gen/json_serializable/24_hour_forecast_data.dart';
+import '../source_gen/json_serializable/pm2_5_data.dart';
+import '../source_gen/json_serializable/reading_data.dart';
 import '../utils/date_time_ext.dart';
 import '../utils/http_utils.dart';
 
 /// The weather service.
 class Weather {
-  // Use a singleton for this service.
-  static final Weather _singleton = Weather._weather();
-
-  Weather._weather();
-
-  factory Weather() => _singleton;
-
   /// The collection of readings for each [ReadingType].
   ///
   /// Keeping the readings separate because:
@@ -66,7 +60,7 @@ class Weather {
   }) async {
     timestamp ??= DateTime.now();
 
-    Client client = Client();
+    Client client = KiwiContainer().resolve<Client>();
 
     List<dynamic> resultsList = await Future.wait([
       _fetchReadingsOfType(

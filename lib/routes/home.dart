@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:kiwi/kiwi.dart';
 import 'package:rubber/rubber.dart';
 import 'package:weather_icons/weather_icons.dart';
 
@@ -709,7 +710,8 @@ class _HomeState extends State<Home>
       _fetchTimestamp = DateTime.now();
     });
 
-    Geoposition userLocation = await Geolocation().getCurrentLocation();
+    Geolocation geolocation = KiwiContainer().resolve<Geolocation>();
+    Geoposition userLocation = await geolocation.getCurrentLocation();
     if (userLocation == null) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
@@ -725,20 +727,21 @@ class _HomeState extends State<Home>
       return;
     }
 
-    await Weather().fetchReadings(
+    Weather weather = KiwiContainer().resolve<Weather>();
+    await weather.fetchReadings(
       timestamp: _fetchTimestamp,
       userLocation: userLocation,
     );
 
     setState(() {
-      _temperature = Weather().getNearestTemperatureReading();
-      _rainfall = Weather().getNearestRainfallReading();
-      _humidity = Weather().getNearestHumidityReading();
-      _windSpeed = Weather().getNearestWindSpeedReading();
-      _windDirection = Weather().getNearestWindDirectionReading();
-      _pm2_5 = Weather().getNearestPM2_5Reading();
-      _condition = Weather().getNearestCondition();
-      _forecasts = Weather().getNearest24HourForecast();
+      _temperature = weather.getNearestTemperatureReading();
+      _rainfall = weather.getNearestRainfallReading();
+      _humidity = weather.getNearestHumidityReading();
+      _windSpeed = weather.getNearestWindSpeedReading();
+      _windDirection = weather.getNearestWindDirectionReading();
+      _pm2_5 = weather.getNearestPM2_5Reading();
+      _condition = weather.getNearestCondition();
+      _forecasts = weather.getNearest24HourForecast();
       _summaryLayerOpacity = 1.0;
     });
     if (_temperature == null ||

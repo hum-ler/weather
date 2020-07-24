@@ -6,6 +6,7 @@ This app shows the weather at your current location. *Works in Singapore only*.
 
 ![Screenshot 1](doc/images/screenshot-1.png)
 ![Screenshot 2](doc/images/screenshot-2.png)
+![Screenshot 3](doc/images/screenshot-3.png)
 
 ## Requirements
 

@@ -59,7 +59,7 @@ void main() {
   test('.isNearBy: .userLocation is near by', () {
     final Condition condition = Condition(
       condition: '',
-      creation: DateTime(3000),
+      creation: DateTime.now(),
       provider: Providers.central,
       userLocation: Providers.central.location,
     );
@@ -69,7 +69,7 @@ void main() {
   test('.isNearBy: .userLocation is far, far away', () {
     final Condition condition = Condition(
       condition: '',
-      creation: DateTime(3000),
+      creation: DateTime.now(),
       provider: Providers.central,
       userLocation: Geoposition(
         latitude: 1.0,

@@ -13,7 +13,7 @@ class MockClient extends Mock implements Client {}
 
 void main() {
   test('.getNearest...(): before calling .fetchReadings() => null', () async {
-    Weather weather = Weather();
+    final Weather weather = Weather();
     expect(weather.getNearest24HourForecast(), isNull);
     expect(weather.getNearest2HourForecast(), isNull);
     expect(weather.getNearestCondition(), isNull);
@@ -26,14 +26,14 @@ void main() {
   });
 
   test('.getNearest...(): null result => null', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
     KiwiContainer()
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
     expect(weather.getNearest24HourForecast(), isNull);
     expect(weather.getNearest2HourForecast(), isNull);
@@ -48,7 +48,7 @@ void main() {
 
   /// Check against a common problem at Data.gov.sg.
   test('.getNearest24HourForecast(): empty result => null', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => Response('''
 {
@@ -64,14 +64,14 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
     expect(weather.getNearest24HourForecast(), isNull);
   });
 
   /// Check against a common problem at Data.gov.sg.
   test('.getNearest2HourForecast(): empty result => null', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => Response('''
 {
@@ -88,7 +88,7 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
     expect(weather.getNearest2HourForecast(), isNull);
     expect(weather.getNearestCondition(), isNull);
@@ -96,7 +96,7 @@ void main() {
 
   /// Check against a common problem at Data.gov.sg.
   test('.getNearest...Reading(): empty result => null', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => Response('''
 {
@@ -113,7 +113,7 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
     expect(weather.getNearestHumidityReading(), isNull);
     expect(weather.getNearestRainfallReading(), isNull);
@@ -124,7 +124,7 @@ void main() {
 
   /// Check against a common problem at Data.gov.sg.
   test('.getNearestPM2_5Reading(): empty result => null', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => Response('''
 {
@@ -141,13 +141,13 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
     expect(weather.getNearestPM2_5Reading(), isNull);
   });
 
   test('.getNearest24HourForecast()', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
     when(client.get(argThat(contains('24-hour')), headers: anyNamed('headers')))
@@ -227,14 +227,13 @@ void main() {
   }
 }
 ''', 200));
-    logInvocations([client as Mock]);
     KiwiContainer()
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
-    List<Forecast> forecasts = weather.getNearest24HourForecast();
+    final List<Forecast> forecasts = weather.getNearest24HourForecast();
     expect(
       forecasts,
       allOf([
@@ -250,7 +249,7 @@ void main() {
   });
 
   test('.getNearest2HourForecast()', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
     when(client.get(argThat(contains('2-hour')), headers: anyNamed('headers')))
@@ -290,19 +289,19 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
-    Forecast forecast = weather.getNearest2HourForecast();
+    final Forecast forecast = weather.getNearest2HourForecast();
     expect(forecast, isNotNull);
     expect(forecast.condition, equals('Partly Cloudy (Night)'));
 
-    Condition condition = weather.getNearestCondition();
+    final Condition condition = weather.getNearestCondition();
     expect(condition, isNotNull);
     expect(condition.condition, equals('Partly Cloudy (Night)'));
   });
 
   test('.getNearest...Reading()', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
     when(
@@ -347,7 +346,7 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
 
     Reading reading = weather.getNearestHumidityReading();
@@ -374,7 +373,7 @@ void main() {
   });
 
   test('.getNearestPM2_5Reading()', () async {
-    Client client = MockClient();
+    final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
     when(client.get(argThat(contains('pm25')), headers: anyNamed('headers')))
@@ -441,9 +440,9 @@ void main() {
       ..clear()
       ..registerInstance<Client>(client);
 
-    Weather weather = Weather();
+    final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
-    Reading reading = weather.getNearestPM2_5Reading();
+    final Reading reading = weather.getNearestPM2_5Reading();
     expect(reading, isNotNull);
     expect(reading.value, equals(8));
   });

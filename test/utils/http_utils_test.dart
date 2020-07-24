@@ -61,4 +61,23 @@ void main() {
           isNotEmpty,
         ])));
   });
+
+  test('httpGetJsonData(): timeout => null', () async {
+    final MockClient client = MockClient();
+    when(client.get(someUrl, headers: anyNamed('headers'))).thenAnswer((_) {
+      return Future<Response>.delayed(
+        const Duration(seconds: 20),
+        () => Response(someJson, HttpStatus.ok),
+      );
+    });
+
+    expect(
+      httpGetJsonData(
+        someUrl,
+        client,
+        timeout: const Duration(milliseconds: 250),
+      ),
+      completion(isNull),
+    );
+  });
 }

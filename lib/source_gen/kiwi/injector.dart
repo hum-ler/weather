@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:kiwi/kiwi.dart';
 
@@ -7,9 +8,10 @@ import '../../services/weather.dart';
 part 'injector.g.dart';
 
 abstract class Injector {
-  @Register.singleton(Geolocation)
-  @Register.singleton(Weather)
   @Register.factory(Client)
+  @Register.singleton(Geolocation)
+  @Register.factory(Geolocator)
+  @Register.singleton(Weather)
   void configure();
 }
 

@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:kiwi/kiwi.dart';
 
 import '../models/condition.dart';
 import '../models/forecast.dart';
 import '../models/geoposition.dart';
 import '../models/provider.dart';
 import '../models/reading.dart';
-import '../models/json/2_hour_forecast_data.dart';
-import '../models/json/24_hour_forecast_data.dart';
-import '../models/json/pm2_5_data.dart';
-import '../models/json/reading_data.dart';
+import '../source_gen/json_serializable/2_hour_forecast_data.dart';
+import '../source_gen/json_serializable/24_hour_forecast_data.dart';
+import '../source_gen/json_serializable/pm2_5_data.dart';
+import '../source_gen/json_serializable/reading_data.dart';
 import '../utils/date_time_ext.dart';
 import '../utils/http_utils.dart';
 
 /// The weather service.
 class Weather {
-  // Use a singleton for this service.
-  static final Weather _singleton = Weather._weather();
-
-  Weather._weather();
-
-  factory Weather() => _singleton;
-
   /// The collection of readings for each [ReadingType].
   ///
   /// Keeping the readings separate because:
@@ -65,50 +60,62 @@ class Weather {
   }) async {
     timestamp ??= DateTime.now();
 
+    Client client = KiwiContainer().resolve<Client>();
+
     List<dynamic> resultsList = await Future.wait([
       _fetchReadingsOfType(
         timestamp: timestamp,
         url: _temperatureUrl,
         type: ReadingType.temperature,
         userLocation: userLocation,
+        client: client,
       ),
       _fetchReadingsOfType(
         timestamp: timestamp,
         url: _rainfallUrl,
         type: ReadingType.rainfall,
         userLocation: userLocation,
+        client: client,
       ),
       _fetchReadingsOfType(
         timestamp: timestamp,
         url: _humidityUrl,
         type: ReadingType.humidity,
         userLocation: userLocation,
+        client: client,
       ),
       _fetchReadingsOfType(
         timestamp: timestamp,
         url: _windSpeedUrl,
         type: ReadingType.windSpeed,
         userLocation: userLocation,
+        client: client,
       ),
       _fetchReadingsOfType(
         timestamp: timestamp,
         url: _windDirectionUrl,
         type: ReadingType.windDirection,
         userLocation: userLocation,
+        client: client,
       ),
       _fetchPM2_5Readings(
         timestamp: timestamp,
         userLocation: userLocation,
+        client: client,
       ),
       _fetch2HourForecasts(
         timestamp: timestamp,
         userLocation: userLocation,
+        client: client,
       ),
       _fetch24HourForecasts(
         timestamp: timestamp,
         userLocation: userLocation,
+        client: client,
       ),
     ]);
+
+    client.close();
 
     _collectFetchResults(resultsList, timestamp);
   }
@@ -201,6 +208,7 @@ class Weather {
     @required String url,
     @required ReadingType type,
     @required Geoposition userLocation,
+    @required Client client,
   }) async {
     // This method is not meant for PM2.5 readings, which is a different API.
     if (type == ReadingType.pm2_5) return null;
@@ -210,7 +218,7 @@ class Weather {
     String fullUrl =
         '$url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl);
+    dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
     ReadingData readingData = ReadingData.fromJson(json);
@@ -254,13 +262,14 @@ class Weather {
   Future<Iterable<Reading>> _fetchPM2_5Readings({
     @required DateTime timestamp,
     @required Geoposition userLocation,
+    @required Client client,
   }) async {
     if (timestamp == null) return null;
 
     String fullUrl =
         '$_pm2_5Url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl);
+    dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
     PM25Data pm2_5Data = PM25Data.fromJson(json);
@@ -299,13 +308,14 @@ class Weather {
   Future<Iterable<Forecast>> _fetch2HourForecasts({
     @required DateTime timestamp,
     @required Geoposition userLocation,
+    @required Client client,
   }) async {
     if (timestamp == null) return null;
 
     String fullUrl =
         '$_x2HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl);
+    dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
     X2HourForecastData x2HourForecastData = X2HourForecastData.fromJson(json);
@@ -343,13 +353,14 @@ class Weather {
   Future<Iterable<List<Forecast>>> _fetch24HourForecasts({
     @required DateTime timestamp,
     @required Geoposition userLocation,
+    @required Client client,
   }) async {
     if (timestamp == null) return null;
 
     String fullUrl =
         '$_x24HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl);
+    dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
     X24HourForecastData x24HourForecastData =

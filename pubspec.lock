@@ -301,6 +301,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
+  kiwi:
+    dependency: "direct main"
+    description:
+      name: kiwi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  kiwi_generator:
+    dependency: "direct dev"
+    description:
+      name: kiwi_generator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   location_permissions:
     dependency: transitive
     description:
@@ -343,6 +357,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.6+3"
+  mockito:
+    dependency: "direct dev"
+    description:
+      name: mockito
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.1"
   node_interop:
     dependency: transitive
     description:

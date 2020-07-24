@@ -15,11 +15,11 @@ Requires location and internet access.
 
 ## Build
 
-It is strongly recommended to use either [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/). You will need to install the Flutter and Flutter Intl plugins / extensions.
+It is strongly recommended to use either [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/). You will need to install the Dart, Flutter, and Flutter Intl plugins / extensions.
 
 Use the latest [Flutter SDK](https://flutter.dev/docs/get-started/install).
 
-Before compiling, run `flutter packages pub run build_runner build` to generate files used for serialization.
+Before launching the app in the IDE, run `flutter packages pub run build_runner build` to generate files used for serialization and dependency injection. If you encounter errors, try appending the flag `--delete-conflicting-outputs`.
 
 ## Usage
 
@@ -49,6 +49,8 @@ This app is developed using [Flutter](https://flutter.dev) and includes the foll
 - [intl](https://pub.dev/packages/intl)
 - [json_annotation](https://pub.dev/packages/json_annotation)
 - [json_serializatble](https://pub.dev/packages/json_serializable)
+- [kiwi](https://pub.dev/packages/kiwi)
+- [kiwi_generator](https://pub.dev/packages/kiwi_generator)
 - [package_info](https://pub.dev/packages/package_info)
 - [rubber](https://pub.dev/packages/rubber)
 - [url_launcher](https://pub.dev/packages/url_launcher)

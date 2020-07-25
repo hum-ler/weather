@@ -215,13 +215,17 @@ class Weather {
 
     if (timestamp == null) return null;
 
-    String fullUrl =
+    final String fullUrl =
         '$url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl, client);
+    final dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
-    ReadingData readingData = ReadingData.fromJson(json);
+    ReadingData readingData;
+    try {
+      readingData = ReadingData.fromJson(json);
+    } on Exception {}
+    if (readingData == null) return null;
 
     if (readingData.apiInfo.status == 'healthy') {
       // Server-side timestamp.
@@ -266,13 +270,17 @@ class Weather {
   }) async {
     if (timestamp == null) return null;
 
-    String fullUrl =
+    final String fullUrl =
         '$_pm2_5Url?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl, client);
+    final dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
-    PM25Data pm2_5Data = PM25Data.fromJson(json);
+    PM25Data pm2_5Data;
+    try {
+      pm2_5Data = PM25Data.fromJson(json);
+    } on Exception {}
+    if (pm2_5Data == null) return null;
 
     if (pm2_5Data.apiInfo.status == 'healthy') {
       // Server-side timestamp.
@@ -312,13 +320,17 @@ class Weather {
   }) async {
     if (timestamp == null) return null;
 
-    String fullUrl =
+    final String fullUrl =
         '$_x2HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl, client);
+    final dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
-    X2HourForecastData x2HourForecastData = X2HourForecastData.fromJson(json);
+    X2HourForecastData x2HourForecastData;
+    try {
+      x2HourForecastData = X2HourForecastData.fromJson(json);
+    } on Exception {}
+    if (x2HourForecastData == null) return null;
 
     if (x2HourForecastData.apiInfo.status == 'healthy') {
       // Server-side timestamp.
@@ -357,14 +369,17 @@ class Weather {
   }) async {
     if (timestamp == null) return null;
 
-    String fullUrl =
+    final String fullUrl =
         '$_x24HourForecastUrl?date_time=${timestamp.format("yyyy-MM-ddTHH:mm:ss")}';
 
-    dynamic json = await httpGetJsonData(fullUrl, client);
+    final dynamic json = await httpGetJsonData(fullUrl, client);
     if (json == null) return null;
 
-    X24HourForecastData x24HourForecastData =
-        X24HourForecastData.fromJson(json);
+    X24HourForecastData x24HourForecastData;
+    try {
+      x24HourForecastData = X24HourForecastData.fromJson(json);
+    } on Exception {}
+    if (x24HourForecastData == null) return null;
 
     if (x24HourForecastData.apiInfo.status == 'healthy') {
       // Server-side timestamp.

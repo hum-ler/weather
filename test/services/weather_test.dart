@@ -12,6 +12,8 @@ import 'package:weather/services/weather.dart';
 class MockClient extends Mock implements Client {}
 
 void main() {
+  setUp(() => KiwiContainer().clear());
+
   test('.getNearest...(): before calling .fetchReadings() => null', () async {
     final Weather weather = Weather();
     expect(weather.getNearest24HourForecast(), isNull);
@@ -29,9 +31,26 @@ void main() {
     final Client client = MockClient();
     when(client.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => null);
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
+
+    final Weather weather = Weather();
+    await weather.fetchReadings(userLocation: Providers.central.location);
+    expect(weather.getNearest24HourForecast(), isNull);
+    expect(weather.getNearest2HourForecast(), isNull);
+    expect(weather.getNearestCondition(), isNull);
+    expect(weather.getNearestHumidityReading(), isNull);
+    expect(weather.getNearestPM2_5Reading(), isNull);
+    expect(weather.getNearestRainfallReading(), isNull);
+    expect(weather.getNearestTemperatureReading(), isNull);
+    expect(weather.getNearestWindDirectionReading(), isNull);
+    expect(weather.getNearestWindSpeedReading(), isNull);
+  });
+
+  test('.getNearest...(): incompatible JSON => null', () async {
+    final Client client = MockClient();
+    when(client.get(any, headers: anyNamed('headers')))
+        .thenAnswer((_) async => Response('{"wrong" : "output"}', 200));
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -60,9 +79,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -84,9 +101,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -109,9 +124,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -137,9 +150,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -227,9 +238,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -285,9 +294,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -342,9 +349,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);
@@ -436,9 +441,7 @@ void main() {
   }
 }
 ''', 200));
-    KiwiContainer()
-      ..clear()
-      ..registerInstance<Client>(client);
+    KiwiContainer().registerInstance<Client>(client);
 
     final Weather weather = Weather();
     await weather.fetchReadings(userLocation: Providers.central.location);

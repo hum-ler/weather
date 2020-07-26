@@ -1,12 +1,12 @@
-![Logo](doc/images/feature-graphic.png)
+![Banner](doc/images/banner-758.png)
 
 # Weather · Right Here · Right Now
 
 This app shows the weather at your current location. *Works in Singapore only*.
 
-![Screenshot 1](doc/images/screenshot-1.png)
-![Screenshot 2](doc/images/screenshot-2.png)
-![Screenshot 3](doc/images/screenshot-3.png)
+![Screenshot 1](doc/images/screenshot-1-250.png)
+![Screenshot 2](doc/images/screenshot-2-250.png)
+![Screenshot 3](doc/images/screenshot-3-250.png)
 
 ## Requirements
 

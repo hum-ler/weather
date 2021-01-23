@@ -35,6 +35,7 @@ Use the drawer at the bottom (drag upwards) to reveal weather details.
 [Weather Icons](https://erikflowers.github.io/weather-icons/) licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL).
 
 [Unsplash](https://unsplash.com) photos licensed under [Unsplash License](https://unsplash.com/license) from the following contributors:
+- [Christina Victoria Craft](https://unsplash.com/s/photos/wind?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [David Moum](https://unsplash.com/@davidmoum?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [Eric Muhr](https://unsplash.com/@ericmuhr?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 - [Fabio Neo Amato](https://unsplash.com/@cloudsdealer?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)

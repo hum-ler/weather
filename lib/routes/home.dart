@@ -725,6 +725,7 @@ class _HomeState extends State<Home>
     final RegExp lightning = RegExp('thunder', caseSensitive: false);
     final RegExp rain = RegExp('(rain|showers)', caseSensitive: false);
     final RegExp cloud = RegExp('cloud', caseSensitive: false);
+    final RegExp wind = RegExp('wind', caseSensitive: false);
     final RegExp day = RegExp('day', caseSensitive: false);
     final RegExp night = RegExp('night', caseSensitive: false);
 
@@ -734,6 +735,7 @@ class _HomeState extends State<Home>
       if (lightning.hasMatch(condition)) return 'assets/images/lightning.webp';
       if (rain.hasMatch(condition)) return 'assets/images/rain.webp';
       if (cloud.hasMatch(condition)) return 'assets/images/cloud.webp';
+      if (wind.hasMatch(condition)) return 'assets/images/wind.webp';
       if (day.hasMatch(condition)) return 'assets/images/day.webp';
       if (night.hasMatch(condition)) return 'assets/images/night.webp';
     }

@@ -275,366 +275,342 @@ class _HomeState extends State<Home>
             borderRadius: BorderRadius.all(Radius.circular(6.0)),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (_temperature != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    BoxedIcon(
-                      WeatherIcons.thermometer,
-                      size: style.smallIconSize,
-                      color: _temperature.isInBounds
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_temperature.value.toStringAsFixed(1)}${_temperature.unit}',
-                      style: _temperature.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color: _temperature.isNearby
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_temperature.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_temperature.distance.toStringAsFixed(1)}${_temperature.distanceUnit})',
-                      style: _temperature.isNearby
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color: _temperature.isExpired
-                          ? style.smallIconWithError
-                          : null,
-                    ),
-                    Text(
-                      _temperature.creation.format(style.dateTimePattern),
-                      style: _temperature.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_rainfall != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    BoxedIcon(
-                      WeatherIcons.umbrella,
-                      size: style.smallIconSize,
-                      color: _rainfall.isInBounds
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_rainfall.value.toStringAsFixed(1)}${_rainfall.unit}',
-                      style: _rainfall.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color:
-                          _rainfall.isNearby ? null : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_rainfall.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
-                      style: _rainfall.isNearby
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color:
-                          _rainfall.isExpired ? style.smallIconWithError : null,
-                    ),
-                    Text(
-                      _rainfall.creation.format(style.dateTimePattern),
-                      style: _rainfall.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_humidity != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    BoxedIcon(
-                      WeatherIcons.raindrop,
-                      size: style.smallIconSize,
-                      color: _humidity.isInBounds
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_humidity.value.toStringAsFixed(1)}${_humidity.unit}',
-                      style: _humidity.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color:
-                          _humidity.isNearby ? null : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_humidity.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_humidity.distance.toStringAsFixed(1)}${_humidity.distanceUnit})',
-                      style: _humidity.isNearby
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color:
-                          _humidity.isExpired ? style.smallIconWithError : null,
-                    ),
-                    Text(
-                      _humidity.creation.format(style.dateTimePattern),
-                      style: _humidity.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_windSpeed != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    BoxedIcon(
-                      WeatherIcons.strong_wind,
-                      size: style.smallIconSize,
-                      color: _windSpeed.isInBounds
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_windSpeed.value.toStringAsFixed(1)}${_windSpeed.unit}',
-                      style: _windSpeed.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color: _windSpeed.isNearby &&
-                              _windSpeed.provider.id ==
-                                  _windDirection?.provider?.id
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_windSpeed.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windSpeed.distance.toStringAsFixed(1)}${_windSpeed.distanceUnit})',
-                      style: _windSpeed.isNearby &&
-                              _windSpeed.provider.id ==
-                                  _windDirection?.provider?.id
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color: _windSpeed.isExpired
-                          ? style.smallIconWithError
-                          : null,
-                    ),
-                    Text(
-                      _windSpeed.creation.format(style.dateTimePattern),
-                      style: _windSpeed.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_windDirection != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    _BoxedIcon(
-                      icon: Icons.navigation,
-                      size: style.smallIconSize,
-                      rotation: degreesToRadians(
-                        _windDirection.value.toDouble(),
-                      ),
-                      color: _windDirection.isInBounds
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_windDirection.value}${_windDirection.unit}',
-                      style: _windDirection.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color: _windDirection.isNearby &&
-                              _windDirection.provider.id ==
-                                  _windSpeed?.provider?.id
-                          ? null
-                          : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_windDirection.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windDirection.distance.toStringAsFixed(1)}${_windDirection.distanceUnit})',
-                      style: _windDirection.isNearby &&
-                              _windDirection.provider.id ==
-                                  _windSpeed?.provider?.id
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color: _windDirection.isExpired
-                          ? style.smallIconWithError
-                          : null,
-                    ),
-                    Text(
-                      _windDirection.creation.format(style.dateTimePattern),
-                      style: _windDirection.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_pm2_5 != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    _BoxedIcon(
-                      icon: Icons.grain,
-                      size: style.smallIconSize,
-                      color:
-                          _pm2_5.isInBounds ? null : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_pm2_5.value}${_pm2_5.unit}',
-                      style: _pm2_5.isInBounds
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color: _pm2_5.isNearby ? null : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_pm2_5.provider.name.capitalize()} (${_pm2_5.distance.toStringAsFixed(1)}${_pm2_5.distanceUnit})',
-                      style: _pm2_5.isNearby
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color: _pm2_5.isExpired ? style.smallIconWithError : null,
-                    ),
-                    Text(
-                      _pm2_5.creation.format(style.dateTimePattern),
-                      style: _pm2_5.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_condition != null)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    _BoxedIcon(
-                      icon: Icons.language,
-                      size: style.smallIconSize,
-                      color: _condition.icon == WeatherIcons.na
-                          ? style.smallIconWithError
-                          : null,
-                    ),
-                    Text(
-                      _condition.condition.truncate(
-                        style.maxConditionLength,
-                        ellipsis: '…',
-                      ),
-                      style: _condition.icon == WeatherIcons.na
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.place,
-                      size: style.smallIconSize,
-                      color:
-                          _condition.isNearby ? null : style.smallIconWithError,
-                    ),
-                    Text(
-                      '${_condition.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
-                      style: _condition.isNearby
-                          ? style.smallText
-                          : style.smallTextWithError,
-                    ),
-                    SizedBox(width: 4.0),
-                    _BoxedIcon(
-                      icon: Icons.schedule,
-                      size: style.smallIconSize,
-                      color: _condition.isExpired
-                          ? style.smallIconWithError
-                          : null,
-                    ),
-                    Text(
-                      _condition.creation.format(style.dateTimePattern),
-                      style: _condition.isExpired
-                          ? style.smallTextWithError
-                          : style.smallText,
-                    ),
-                  ],
-                ),
-              if (_forecasts != null)
-                for (Forecast forecast in _forecasts)
-                  Row(
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      _BoxedIcon(
-                        icon: Icons.schedule,
+                      BoxedIcon(
+                        WeatherIcons.thermometer,
                         size: style.smallIconSize,
+                        color: _temperature.isInBounds
+                            ? null
+                            : style.smallIconWithError,
                       ),
                       Text(
-                        forecast.type.toString().asEnumLabel().capitalize(),
-                        style: style.smallText,
+                        '${_temperature.value.toStringAsFixed(1)}${_temperature.unit}',
+                        style: _temperature.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
                       ),
                       SizedBox(width: 4.0),
                       _BoxedIcon(
-                        icon: Icons.language,
+                        icon: Icons.place,
                         size: style.smallIconSize,
-                        color: forecast.icon == WeatherIcons.na
+                        color: _temperature.isNearby
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_temperature.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_temperature.distance.toStringAsFixed(1)}${_temperature.distanceUnit})',
+                        style: _temperature.isNearby
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _temperature.isExpired
                             ? style.smallIconWithError
                             : null,
                       ),
                       Text(
-                        forecast.condition.truncate(
+                        _temperature.creation.format(style.dateTimePattern),
+                        style: _temperature.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_rainfall != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      BoxedIcon(
+                        WeatherIcons.umbrella,
+                        size: style.smallIconSize,
+                        color: _rainfall.isInBounds
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_rainfall.value.toStringAsFixed(1)}${_rainfall.unit}',
+                        style: _rainfall.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.place,
+                        size: style.smallIconSize,
+                        color: _rainfall.isNearby
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_rainfall.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_rainfall.distance.toStringAsFixed(1)}${_rainfall.distanceUnit})',
+                        style: _rainfall.isNearby
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _rainfall.isExpired
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _rainfall.creation.format(style.dateTimePattern),
+                        style: _rainfall.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_humidity != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      BoxedIcon(
+                        WeatherIcons.raindrop,
+                        size: style.smallIconSize,
+                        color: _humidity.isInBounds
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_humidity.value.toStringAsFixed(1)}${_humidity.unit}',
+                        style: _humidity.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.place,
+                        size: style.smallIconSize,
+                        color: _humidity.isNearby
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_humidity.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_humidity.distance.toStringAsFixed(1)}${_humidity.distanceUnit})',
+                        style: _humidity.isNearby
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _humidity.isExpired
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _humidity.creation.format(style.dateTimePattern),
+                        style: _humidity.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_windSpeed != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      BoxedIcon(
+                        WeatherIcons.strong_wind,
+                        size: style.smallIconSize,
+                        color: _windSpeed.isInBounds
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_windSpeed.value.toStringAsFixed(1)}${_windSpeed.unit}',
+                        style: _windSpeed.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.place,
+                        size: style.smallIconSize,
+                        color: _windSpeed.isNearby &&
+                                _windSpeed.provider.id ==
+                                    _windDirection?.provider?.id
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_windSpeed.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windSpeed.distance.toStringAsFixed(1)}${_windSpeed.distanceUnit})',
+                        style: _windSpeed.isNearby &&
+                                _windSpeed.provider.id ==
+                                    _windDirection?.provider?.id
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _windSpeed.isExpired
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _windSpeed.creation.format(style.dateTimePattern),
+                        style: _windSpeed.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_windDirection != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _BoxedIcon(
+                        icon: Icons.navigation,
+                        size: style.smallIconSize,
+                        rotation: degreesToRadians(
+                          _windDirection.value.toDouble(),
+                        ),
+                        color: _windDirection.isInBounds
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_windDirection.value}${_windDirection.unit}',
+                        style: _windDirection.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.place,
+                        size: style.smallIconSize,
+                        color: _windDirection.isNearby &&
+                                _windDirection.provider.id ==
+                                    _windSpeed?.provider?.id
+                            ? null
+                            : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_windDirection.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_windDirection.distance.toStringAsFixed(1)}${_windDirection.distanceUnit})',
+                        style: _windDirection.isNearby &&
+                                _windDirection.provider.id ==
+                                    _windSpeed?.provider?.id
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _windDirection.isExpired
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _windDirection.creation.format(style.dateTimePattern),
+                        style: _windDirection.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_pm2_5 != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _BoxedIcon(
+                        icon: Icons.grain,
+                        size: style.smallIconSize,
+                        color:
+                            _pm2_5.isInBounds ? null : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_pm2_5.value}${_pm2_5.unit}',
+                        style: _pm2_5.isInBounds
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.place,
+                        size: style.smallIconSize,
+                        color:
+                            _pm2_5.isNearby ? null : style.smallIconWithError,
+                      ),
+                      Text(
+                        '${_pm2_5.provider.name.capitalize()} (${_pm2_5.distance.toStringAsFixed(1)}${_pm2_5.distanceUnit})',
+                        style: _pm2_5.isNearby
+                            ? style.smallText
+                            : style.smallTextWithError,
+                      ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color:
+                            _pm2_5.isExpired ? style.smallIconWithError : null,
+                      ),
+                      Text(
+                        _pm2_5.creation.format(style.dateTimePattern),
+                        style: _pm2_5.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
+                    ],
+                  ),
+                ),
+              if (_condition != null)
+                FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.none,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _BoxedIcon(
+                        icon: Icons.language,
+                        size: style.smallIconSize,
+                        color: _condition.icon == WeatherIcons.na
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _condition.condition.truncate(
                           style.maxConditionLength,
                           ellipsis: '…',
                         ),
-                        style: forecast.icon == WeatherIcons.na
+                        style: _condition.icon == WeatherIcons.na
                             ? style.smallTextWithError
                             : style.smallText,
                       ),
@@ -642,16 +618,81 @@ class _HomeState extends State<Home>
                       _BoxedIcon(
                         icon: Icons.place,
                         size: style.smallIconSize,
-                        color:
-                            forecast.isNearby ? null : style.smallIconWithError,
+                        color: _condition.isNearby
+                            ? null
+                            : style.smallIconWithError,
                       ),
                       Text(
-                        '${forecast.provider.name.capitalize()} (${forecast.distance.toStringAsFixed(1)}${forecast.distanceUnit})',
-                        style: forecast.isNearby
+                        '${_condition.provider.name.truncate(style.maxProviderNameLength, ellipsis: "…")} (${_condition.distance.toStringAsFixed(1)}${_condition.distanceUnit})',
+                        style: _condition.isNearby
                             ? style.smallText
                             : style.smallTextWithError,
                       ),
+                      SizedBox(width: 4.0),
+                      _BoxedIcon(
+                        icon: Icons.schedule,
+                        size: style.smallIconSize,
+                        color: _condition.isExpired
+                            ? style.smallIconWithError
+                            : null,
+                      ),
+                      Text(
+                        _condition.creation.format(style.dateTimePattern),
+                        style: _condition.isExpired
+                            ? style.smallTextWithError
+                            : style.smallText,
+                      ),
                     ],
+                  ),
+                ),
+              if (_forecasts != null)
+                for (Forecast forecast in _forecasts)
+                  FittedBox(
+                    alignment: Alignment.centerLeft,
+                    fit: BoxFit.none,
+                    child: Row(
+                      children: <Widget>[
+                        _BoxedIcon(
+                          icon: Icons.schedule,
+                          size: style.smallIconSize,
+                        ),
+                        Text(
+                          forecast.type.toString().asEnumLabel().capitalize(),
+                          style: style.smallText,
+                        ),
+                        SizedBox(width: 4.0),
+                        _BoxedIcon(
+                          icon: Icons.language,
+                          size: style.smallIconSize,
+                          color: forecast.icon == WeatherIcons.na
+                              ? style.smallIconWithError
+                              : null,
+                        ),
+                        Text(
+                          forecast.condition.truncate(
+                            style.maxConditionLength,
+                            ellipsis: '…',
+                          ),
+                          style: forecast.icon == WeatherIcons.na
+                              ? style.smallTextWithError
+                              : style.smallText,
+                        ),
+                        SizedBox(width: 4.0),
+                        _BoxedIcon(
+                          icon: Icons.place,
+                          size: style.smallIconSize,
+                          color: forecast.isNearby
+                              ? null
+                              : style.smallIconWithError,
+                        ),
+                        Text(
+                          '${forecast.provider.name.capitalize()} (${forecast.distance.toStringAsFixed(1)}${forecast.distanceUnit})',
+                          style: forecast.isNearby
+                              ? style.smallText
+                              : style.smallTextWithError,
+                        ),
+                      ],
+                    ),
                   ),
             ],
           ),

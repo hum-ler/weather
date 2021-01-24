@@ -232,7 +232,7 @@ class _HomeState extends State<Home>
                               ),
                           ],
                         ),
-                      SizedBox(height: Scaffold.of(context).appBarMaxHeight),
+                      SizedBox(height: AppBar().preferredSize.height),
                     ],
                   ),
                 ),

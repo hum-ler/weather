@@ -66,6 +66,7 @@ class Condition {
     'Cloudy': WeatherIcons.cloudy,
     'Fair (Day)': WeatherIcons.day_sunny,
     'Fair (Night)': WeatherIcons.night_clear,
+    'Fair & Warm': WeatherIcons.hot,
     'Hazy': WeatherIcons.dust,
     'Hazy (Day)': WeatherIcons.day_haze,
     'Hazy (Night)': WeatherIcons.dust,

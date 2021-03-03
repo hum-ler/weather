@@ -20,7 +20,7 @@ It is strongly recommended to use either [Android Studio](https://developer.andr
 
 Use the latest [Flutter SDK](https://flutter.dev/docs/get-started/install).
 
-Before launching the app in the IDE, run `flutter packages pub run build_runner build` to generate files used for serialization and dependency injection. If you encounter errors, try appending the flag `--delete-conflicting-outputs`.
+Before launching the app in the IDE, run `flutter packages run build_runner build` to generate files used for serialization and dependency injection. If you encounter errors, try appending the flag `--delete-conflicting-outputs`.
 
 ## Usage
 
